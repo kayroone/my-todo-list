@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.model.TodoBase;
-import org.threeten.bp.OffsetDateTime;
+import java.time.OffsetDateTime;
 import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -16,7 +16,7 @@ import javax.validation.constraints.*;
  */
 @ApiModel(description = "The full todo with identifier used as response object.")
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-03-14T08:55:59.545Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-03-14T13:19:45.394Z")
 
 public class TodoFull extends TodoBase  {
   @JsonProperty("id")
@@ -36,7 +36,7 @@ public class TodoFull extends TodoBase  {
   @ApiModelProperty(required = true, value = "")
   @NotNull
 
-@Min(0) @Max(1000000) 
+  @Min(0) @Max(1000000)
   public Integer getId() {
     return id;
   }
