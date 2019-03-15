@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.validation.annotation.Validated;
 
+import javax.persistence.MappedSuperclass;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -16,7 +17,9 @@ import java.util.Objects;
  */
 @ApiModel(description = "A base todo used for creation and modification.")
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-03-14T13:19:45.394Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-03-15T21:20:24.293Z")
+
+@MappedSuperclass
 public class TodoBase {
 
     @JsonProperty("title")
@@ -34,9 +37,6 @@ public class TodoBase {
     public TodoBase title(String title) {
         this.title = title;
         return this;
-    }
-
-    public TodoBase() {
     }
 
     /**

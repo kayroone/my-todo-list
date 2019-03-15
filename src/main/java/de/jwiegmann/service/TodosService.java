@@ -2,7 +2,6 @@ package de.jwiegmann.service;
 
 import de.jwiegmann.model.TodoBase;
 import de.jwiegmann.model.TodoFull;
-import de.jwiegmann.model.TodoList;
 import de.jwiegmann.repository.TodosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

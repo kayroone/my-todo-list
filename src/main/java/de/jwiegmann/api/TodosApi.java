@@ -6,13 +6,14 @@
 package de.jwiegmann.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.annotations.*;
 import de.jwiegmann.model.ErrorResponse;
 import de.jwiegmann.model.TodoBase;
 import de.jwiegmann.model.TodoFull;
 import de.jwiegmann.model.TodoList;
+import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,13 +21,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-03-14T13:19:45.394Z")
 
-/**
- * Auto-generated Swagger To Do API endpoint.
- */
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-03-15T21:20:24.293Z")
 
 @Api(value = "todos", description = "the todos API")
 public interface TodosApi {
@@ -36,105 +35,141 @@ public interface TodosApi {
     default Optional<ObjectMapper> getObjectMapper() {
         return Optional.empty();
     }
+
     default Optional<HttpServletRequest> getRequest() {
         return Optional.empty();
     }
+
     default Optional<String> getAcceptHeader() {
         return getRequest().map(r -> r.getHeader("Accept"));
     }
 
-    /**
-     * Create a new To Do item.
-     *
-     * @param body JSON body.
-     * @return HTTP status 201 with the new To Do item as JSON body or HTTP status 400 for invalid To Do data.
-     */
-
     @ApiOperation(value = "Create Todo", nickname = "createTodo", notes = "Create a new todo.", response = TodoFull.class, tags={ "Todos", })
-    @ApiResponses(value = {
+    @ApiResponses(value = { 
         @ApiResponse(code = 201, message = "Todo created.", response = TodoFull.class),
-        @ApiResponse(code = 400, message = "Invalid new todo.", response = ErrorResponse.class, responseContainer = "List")
-    })
-    @RequestMapping(value = "/todos",
-        produces = { "application/json" },
+        @ApiResponse(code = 400, message = "Invalid new todo.", response = ErrorResponse.class, responseContainer = "List")})
+    @RequestMapping(value = "/todos", produces = {"application/json"},
         consumes = { "application/json" },
         method = RequestMethod.POST)
-    ResponseEntity<TodoFull> createTodo(@ApiParam(value = "The new todo."  ) @Valid @RequestBody TodoBase body);
+    default ResponseEntity<TodoFull> createTodo(@ApiParam(value = "The new todo.") @Valid @RequestBody TodoBase body) {
+        if (getObjectMapper().isPresent() && getAcceptHeader().isPresent()) {
+            if (getAcceptHeader().get().contains("application/json")) {
+                try {
+                    return new ResponseEntity<>(getObjectMapper().get().readValue(
+                        "{  \"id\" : 1,  \"title\" : \"clean fridge\",  \"description\" : \"It's a mess\",  \"dueDate\" : \"2018-08-27T12:34:56.789Z\",  \"done\" : false}",
+                        TodoFull.class), HttpStatus.NOT_IMPLEMENTED);
+                } catch (IOException e) {
+                    log.error("Couldn't serialize response for content type application/json", e);
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+        } else {
+            log.warn(
+                "ObjectMapper or HttpServletRequest not configured in default TodosApi interface so no example is generated");
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-    /**
-     * Delete an existing To Do item.
-     *
-     * @param todoId The To Do item ID.
-     * @return HTTP status 204 for a successful deletion or HTTP status 404 if the To Do item could not be found.
-     */
 
     @ApiOperation(value = "Delete Todo", nickname = "deleteTodo", notes = "Delete an existing todo.", tags={ "Todos", })
-    @ApiResponses(value = {
+    @ApiResponses(value = { 
         @ApiResponse(code = 204, message = "Todo deleted."),
         @ApiResponse(code = 404, message = "Todo not found.") })
-    @RequestMapping(value = "/todos/{todo-id}",
-        produces = { "application/json" },
+    @RequestMapping(value = "/todos/{todo-id}", produces = {"application/json"},
         consumes = { "application/json" },
         method = RequestMethod.DELETE)
-    ResponseEntity<Void> deleteTodo(@ApiParam(value = "The todo identifier.",required=true) @PathVariable("todo-id") Integer todoId);
+    default ResponseEntity<Void> deleteTodo(
+        @ApiParam(value = "The todo identifier.", required = true) @PathVariable("todo-id") Integer todoId)
+    {
+        if (getObjectMapper().isPresent() && getAcceptHeader().isPresent()) {
+        } else {
+            log.warn(
+                "ObjectMapper or HttpServletRequest not configured in default TodosApi interface so no example is generated");
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-    /**
-     * Get a single To Do item.
-     *
-     * @param todoId The To Do item ID.
-     * @return HTTP status 200 with the To Do item as JSON body or HTTP status 404 if the To Do item could not be found.
-     */
 
     @ApiOperation(value = "Get Todo", nickname = "getTodo", notes = "Request an existing todo.", response = TodoFull.class, tags={ "Todos", })
-    @ApiResponses(value = {
+    @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "Todo found.", response = TodoFull.class),
         @ApiResponse(code = 404, message = "Todo not found.") })
-    @RequestMapping(value = "/todos/{todo-id}",
-        produces = { "application/json" },
+    @RequestMapping(value = "/todos/{todo-id}", produces = {"application/json"},
         consumes = { "application/json" },
         method = RequestMethod.GET)
-    ResponseEntity<TodoFull> getTodo(@ApiParam(value = "The todo identifier.",required=true) @PathVariable("todo-id") Integer todoId);
+    default ResponseEntity<TodoFull> getTodo(
+        @ApiParam(value = "The todo identifier.", required = true) @PathVariable("todo-id") Integer todoId)
+    {
+        if (getObjectMapper().isPresent() && getAcceptHeader().isPresent()) {
+            if (getAcceptHeader().get().contains("application/json")) {
+                try {
+                    return new ResponseEntity<>(getObjectMapper().get().readValue(
+                        "{  \"id\" : 1,  \"title\" : \"clean fridge\",  \"description\" : \"It's a mess\",  \"dueDate\" : \"2018-08-27T12:34:56.789Z\",  \"done\" : false}",
+                        TodoFull.class), HttpStatus.NOT_IMPLEMENTED);
+                } catch (IOException e) {
+                    log.error("Couldn't serialize response for content type application/json", e);
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+        } else {
+            log.warn(
+                "ObjectMapper or HttpServletRequest not configured in default TodosApi interface so no example is generated");
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-    /**
-     * Get all existing To Do items.
-     *
-     * @param state State of the To Do item (e.g. unfished).
-     * @param limit Limit the number of To Do items returned.
-     * @param offset Define the number from which elements are to be returned.
-     * @return HTTP status 200 with a list of To Do items as JSON body, HTTP status 204 if there are no To Do items,
-     * HTTP status 206 with the partial requested To Do items or HTTP status 400 for invalid query params.
-     */
 
     @ApiOperation(value = "List todos", nickname = "getTodos", notes = "Get a list of todos.", response = TodoList.class, responseContainer = "List", tags={ "Todos", })
-    @ApiResponses(value = {
+    @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "List of todos.", response = TodoList.class, responseContainer = "List"),
         @ApiResponse(code = 204, message = "Empty list of todos"),
         @ApiResponse(code = 206, message = "Partial list of todos.", response = TodoList.class),
         @ApiResponse(code = 400, message = "Invalid query params", response = ErrorResponse.class, responseContainer = "List") })
-    @RequestMapping(value = "/todos",
-        produces = { "application/json" },
+    @RequestMapping(value = "/todos", produces = {"application/json"},
         consumes = { "application/json" },
         method = RequestMethod.GET)
-    ResponseEntity<List<TodoList>> getTodos(@ApiParam(value = "Filters all or unfinished todos in the response", allowableValues = "all, unfinished", defaultValue = "unfinished") @Valid @RequestParam(value = "state", required = false, defaultValue="unfinished") String state,@Min(0) @Max(10) @ApiParam(value = "Maximal number of todos in the response", defaultValue = "5") @Valid @RequestParam(value = "limit", required = false, defaultValue="5") Integer limit,@Min(0) @Max(100) @ApiParam(value = "Offset for the todos in the response") @Valid @RequestParam(value = "offset", required = false) Integer offset);
+    default ResponseEntity<List<TodoList>> getTodos(
+        @ApiParam(value = "Filters all or unfinished todos in the response", allowableValues = "all, unfinished", defaultValue = "unfinished") @Valid @RequestParam(value = "state", required = false, defaultValue = "unfinished") String state,
+        @Min(0) @Max(10) @ApiParam(value = "Maximal number of todos in the response", defaultValue = "5") @Valid @RequestParam(value = "limit", required = false, defaultValue = "5") Integer limit,
+        @Min(0) @Max(100) @ApiParam(value = "Offset for the todos in the response") @Valid @RequestParam(value = "offset", required = false) Integer offset)
+    {
+        if (getObjectMapper().isPresent() && getAcceptHeader().isPresent()) {
+            if (getAcceptHeader().get().contains("application/json")) {
+                try {
+                    return new ResponseEntity<>(getObjectMapper().get().readValue(
+                        "[ {  \"id\" : 1,  \"title\" : \"clean fridge\",  \"dueDate\" : \"2018-08-27T12:34:56.789Z\",  \"done\" : false}, {  \"id\" : 2,  \"title\" : \"clean bathrom\",  \"dueDate\" : \"2018-08-28T09:00:00.000Z\",  \"done\" : false}, {  \"id\" : 3,  \"title\" : \"bring out garbage\",  \"dueDate\" : \"2018-08-29T11:00:00.000Z\",  \"done\" : false}, {  \"id\" : 4,  \"title\" : \"go to supermarket\",  \"dueDate\" : \"2018-08-25T14:30:00.000Z\",  \"done\" : true}, {  \"id\" : 5,  \"title\" : \"write user stories\",  \"dueDate\" : \"2018-09-01T10:00:00.000Z\",  \"done\" : false}, {  \"id\" : 6,  \"title\" : \"pay bills\",  \"dueDate\" : \"2018-09-01T16:00:00.000Z\",  \"done\" : false}, {  \"id\" : 7,  \"title\" : \"call mum\",  \"dueDate\" : \"2018-09-01T19:00:00.000Z\",  \"done\" : false} ]",
+                        List.class), HttpStatus.NOT_IMPLEMENTED);
+                } catch (IOException e) {
+                    log.error("Couldn't serialize response for content type application/json", e);
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+        } else {
+            log.warn(
+                "ObjectMapper or HttpServletRequest not configured in default TodosApi interface so no example is generated");
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-    /**
-     * Update an existing To Do item.
-     *
-     * @param todoId The To Do item ID
-     * @param body The JSON body containing the changes.
-     * @return HTTP status 204 with the updated To Do items as JSON body,
-     * HTTP status 400 if there was an error modifying the To Do item or HTTP status 404 if the To Do item could not be found.
-     */
 
     @ApiOperation(value = "Update Todo", nickname = "updateTodo", notes = "Update an existing todo.", tags={ "Todos", })
-    @ApiResponses(value = {
+    @ApiResponses(value = { 
         @ApiResponse(code = 204, message = "Todo updated."),
         @ApiResponse(code = 400, message = "Invalid modified todo.", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 404, message = "Todo not found.") })
-    @RequestMapping(value = "/todos/{todo-id}",
-        produces = { "application/json" },
+    @RequestMapping(value = "/todos/{todo-id}", produces = {"application/json"},
         consumes = { "application/json" },
         method = RequestMethod.PUT)
-    ResponseEntity<TodoFull> updateTodo(@ApiParam(value = "The todo identifier.",required=true)
-    @PathVariable("todo-id") Integer todoId,@ApiParam(value = "The modified todo."  )  @Valid @RequestBody TodoBase body);
+    default ResponseEntity<TodoFull> updateTodo(
+        @ApiParam(value = "The todo identifier.", required = true) @PathVariable("todo-id") Integer todoId,
+        @ApiParam(value = "The modified todo.") @Valid @RequestBody TodoBase body)
+    {
+        if (getObjectMapper().isPresent() && getAcceptHeader().isPresent()) {
+        } else {
+            log.warn(
+                "ObjectMapper or HttpServletRequest not configured in default TodosApi interface so no example is generated");
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
+
 }

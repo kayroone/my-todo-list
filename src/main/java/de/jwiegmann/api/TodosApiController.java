@@ -8,28 +8,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.util.Optional;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-03-14T13:19:45.394Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-03-15T21:20:24.293Z")
 
-@RestController
+@Controller
 public class TodosApiController implements TodosApi {
 
     private final ObjectMapper objectMapper;
     private final HttpServletRequest request;
-    private final TodosService todosService;
 
     @Autowired
-    public TodosApiController(ObjectMapper objectMapper, HttpServletRequest request, TodosService todosService) {
+    TodosService todosService;
+
+    @Autowired
+    public TodosApiController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.request = request;
-        this.todosService = todosService;
     }
 
     /**
@@ -150,4 +151,5 @@ public class TodosApiController implements TodosApi {
             return new ResponseEntity<>(updatedTodo.get(), HttpStatus.NOT_FOUND);
         }
     }
+
 }
