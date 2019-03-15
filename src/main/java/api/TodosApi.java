@@ -135,6 +135,6 @@ public interface TodosApi {
         produces = { "application/json" },
         consumes = { "application/json" },
         method = RequestMethod.PUT)
-    ResponseEntity<Void> updateTodo(@ApiParam(value = "The todo identifier.",required=true)
+    ResponseEntity<TodoFull> updateTodo(@ApiParam(value = "The todo identifier.",required=true)
     @PathVariable("todo-id") Integer todoId,@ApiParam(value = "The modified todo."  )  @Valid @RequestBody TodoBase body);
 }

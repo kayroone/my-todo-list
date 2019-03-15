@@ -4,16 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.model.TodoBase;
 import io.swagger.model.TodoFull;
 import io.swagger.model.TodoList;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import service.TodosService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.URI;
-import java.util.List;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.Optional;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-03-14T13:19:45.394Z")
@@ -62,7 +62,13 @@ public class TodosApiController implements TodosApi {
     @Override
     public ResponseEntity<Void> deleteTodo(Integer todoId) {
 
-        return null;
+        boolean successfulDeleted = this.todosService.deleteTodo(todoId);
+
+        if (successfulDeleted) {
+            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+        }
     }
 
     /**
@@ -75,23 +81,53 @@ public class TodosApiController implements TodosApi {
     @Override
     public ResponseEntity<TodoFull> getTodo(Integer todoId) {
 
-        return null;
+        Optional<TodoFull> existingTodo = this.todosService.getTodo(todoId);
+
+        if (existingTodo.isPresent()) {
+            return new ResponseEntity<TodoFull>(existingTodo.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     /**
      * Get all existing To Do items.
      *
-     * @param state  State of the To Do item (e.g. unfished).
+     * @param state  State of the To Do item (e.g. unfinished).
      * @param limit  Limit the number of To Do items returned.
      * @param offset Define the number from which elements are to be returned.
      *
-     * @return HTTP status 200 with a list of To Do items as JSON body, HTTP status 204 if there are no To Do items,
-     * HTTP status 206 with the partial requested To Do items or HTTP status 400 for invalid query params.
+     * @return HTTP status 200 with a list of To Do items as JSON body, HTTP status 206 with the partial requested
+     * To Do items, HTTP status 204 if there are no To Do items, or HTTP status 400 for invalid query params.
      */
     @Override
-    public ResponseEntity<List<TodoList>> getTodos(String state, Integer limit, Integer offset) {
+    public ResponseEntity getTodos(@RequestParam(required = false, defaultValue = "unfinished") String state,
+        @Min(0) @Max(10) @RequestParam(required = false, defaultValue = "5") Integer limit,
+        @Min(0) @Max(100) @RequestParam(required = false) Integer offset)
+    {
 
-        return null;
+        Page<TodoList> foundTodos = this.todosService.getTodos(state, limit, offset);
+
+        // Without offset - maximum result of 5 items:
+        if (foundTodos.hasContent() && offset == null) {
+            return new ResponseEntity<Page<TodoList>>(foundTodos, HttpStatus.OK);
+        }
+
+        // With offset:
+        else if (foundTodos.hasContent() && offset != null) {
+            return new ResponseEntity<Page<TodoList>>(foundTodos, HttpStatus.PARTIAL_CONTENT);
+        }
+
+        // No items found:
+        else if (!foundTodos.hasContent()) {
+            return new ResponseEntity<>(foundTodos, HttpStatus.NO_CONTENT);
+
+        }
+
+        // Entities could not be processed:
+        else {
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**
@@ -104,7 +140,14 @@ public class TodosApiController implements TodosApi {
      * HTTP status 400 if there was an error modifying the To Do item or HTTP status 404 if the To Do item could not be found.
      */
     @Override
-    public ResponseEntity<Void> updateTodo(Integer todoId, TodoBase body) {
-        return null;
+    public ResponseEntity<TodoFull> updateTodo(Integer todoId, TodoBase body) {
+
+        Optional<TodoFull> updatedTodo = this.todosService.updateTodo(todoId, body);
+
+        if (updatedTodo.isPresent()) {
+            return new ResponseEntity<>(updatedTodo.get(), HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(updatedTodo.get(), HttpStatus.NOT_FOUND);
+        }
     }
 }

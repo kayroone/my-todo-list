@@ -26,6 +26,8 @@ public class TodoFull extends TodoBase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id = null;
 
+    private boolean done = false;
+
     /**
      * Copy constructor: TodoBase to TodoFull.
      *
@@ -39,11 +41,22 @@ public class TodoFull extends TodoBase {
         super.setDescription(todoBase.getDescription());
         super.setDueDate(todoBase.getDueDate());
         super.setTitle(todoBase.getTitle());
+        this.done = todoBase.isDone();
     }
 
+    /**
+     * Copy constructor: TodoList to TodoFull.
+     *
+     * @param id
+     *
+     * @return
+     */
+
     public TodoFull(TodoList todoList) {
+
         super.setDueDate(todoList.getDueDate());
         super.setTitle(todoList.getTitle());
+        this.done = todoList.isDone();
     }
 
     public TodoFull id(Integer id) {
