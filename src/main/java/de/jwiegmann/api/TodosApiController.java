@@ -1,15 +1,15 @@
-package api;
+package de.jwiegmann.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.model.TodoBase;
-import io.swagger.model.TodoFull;
-import io.swagger.model.TodoList;
+import de.jwiegmann.model.TodoBase;
+import de.jwiegmann.model.TodoFull;
+import de.jwiegmann.service.TodosService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import service.TodosService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Max;
@@ -25,7 +25,7 @@ public class TodosApiController implements TodosApi {
     private final HttpServletRequest request;
     private final TodosService todosService;
 
-    @org.springframework.beans.factory.annotation.Autowired
+    @Autowired
     public TodosApiController(ObjectMapper objectMapper, HttpServletRequest request, TodosService todosService) {
         this.objectMapper = objectMapper;
         this.request = request;
@@ -106,16 +106,16 @@ public class TodosApiController implements TodosApi {
         @Min(0) @Max(100) @RequestParam(required = false) Integer offset)
     {
 
-        Page<TodoList> foundTodos = this.todosService.getTodos(state, limit, offset);
+        Page<TodoFull> foundTodos = this.todosService.getTodos(state, limit, offset);
 
         // Without offset - maximum result of 5 items:
         if (foundTodos.hasContent() && offset == null) {
-            return new ResponseEntity<Page<TodoList>>(foundTodos, HttpStatus.OK);
+            return new ResponseEntity<Page<TodoFull>>(foundTodos, HttpStatus.OK);
         }
 
         // With offset:
         else if (foundTodos.hasContent() && offset != null) {
-            return new ResponseEntity<Page<TodoList>>(foundTodos, HttpStatus.PARTIAL_CONTENT);
+            return new ResponseEntity<Page<TodoFull>>(foundTodos, HttpStatus.PARTIAL_CONTENT);
         }
 
         // No items found:

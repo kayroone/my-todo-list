@@ -1,8 +1,9 @@
-package io.swagger.model;
+package de.jwiegmann.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
@@ -19,6 +20,7 @@ import java.util.Objects;
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-03-14T13:19:45.394Z")
 @Entity
 @Table(name = "todos")
+@Component
 public class TodoFull extends TodoBase {
 
     @JsonProperty("id")
@@ -27,6 +29,8 @@ public class TodoFull extends TodoBase {
     private Integer id = null;
 
     private boolean done = false;
+
+    public TodoFull() { }
 
     /**
      * Copy constructor: TodoBase to TodoFull.

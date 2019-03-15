@@ -1,4 +1,4 @@
-package api;
+package de.jwiegmann.api;
 
 import javax.xml.bind.annotation.XmlTransient;
 

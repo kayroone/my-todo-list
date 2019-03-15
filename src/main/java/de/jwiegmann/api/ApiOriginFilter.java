@@ -1,4 +1,4 @@
-package api;
+package de.jwiegmann.api;
 
 import java.io.IOException;
 
