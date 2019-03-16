@@ -75,9 +75,7 @@ public interface TodosApi {
     @ApiResponses(value = { 
         @ApiResponse(code = 204, message = "Todo deleted."),
         @ApiResponse(code = 404, message = "Todo not found.") })
-    @RequestMapping(value = "/todos/{todo-id}", produces = {"application/json"},
-        consumes = { "application/json" },
-        method = RequestMethod.DELETE)
+    @RequestMapping(value = "/todos/{todo-id}", method = RequestMethod.DELETE)
     default ResponseEntity<Void> deleteTodo(
         @ApiParam(value = "The todo identifier.", required = true) @PathVariable("todo-id") Integer todoId)
     {
@@ -95,7 +93,6 @@ public interface TodosApi {
         @ApiResponse(code = 200, message = "Todo found.", response = TodoFull.class),
         @ApiResponse(code = 404, message = "Todo not found.") })
     @RequestMapping(value = "/todos/{todo-id}", produces = {"application/json"},
-        consumes = { "application/json" },
         method = RequestMethod.GET)
     default ResponseEntity<TodoFull> getTodo(
         @ApiParam(value = "The todo identifier.", required = true) @PathVariable("todo-id") Integer todoId)
@@ -126,7 +123,6 @@ public interface TodosApi {
         @ApiResponse(code = 206, message = "Partial list of todos.", response = TodoList.class),
         @ApiResponse(code = 400, message = "Invalid query params", response = ErrorResponse.class, responseContainer = "List") })
     @RequestMapping(value = "/todos", produces = {"application/json"},
-        consumes = { "application/json" },
         method = RequestMethod.GET)
     default ResponseEntity<List<TodoList>> getTodos(
         @ApiParam(value = "Filters all or unfinished todos in the response", allowableValues = "all, unfinished", defaultValue = "unfinished") @Valid @RequestParam(value = "state", required = false, defaultValue = "unfinished") String state,
@@ -171,5 +167,4 @@ public interface TodosApi {
         }
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
-
 }

@@ -3,11 +3,13 @@ package de.jwiegmann.repository;
 import de.jwiegmann.model.TodoFull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TodosRepository extends CrudRepository<TodoFull, Integer> {
+public interface TodosRepository extends PagingAndSortingRepository<TodoFull, Integer> {
 
     Page<TodoFull> findAll(Pageable pageable);
+
+    Page<TodoFull> findAllByDone(boolean done, Pageable pageable);
 }

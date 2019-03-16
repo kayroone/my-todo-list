@@ -27,10 +27,7 @@ public class TodoFull extends TodoBase {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id = null;
 
-    private boolean done = false;
-
     public TodoFull() {
-
     }
 
     /**
@@ -43,11 +40,10 @@ public class TodoFull extends TodoBase {
 
     public TodoFull(TodoBase todoBase) {
 
-        super.setDescription(todoBase.getDescription());
-        super.setDueDate(todoBase.getDueDate());
-        super.setTitle(todoBase.getTitle());
-
-        this.done = todoBase.isDone();
+        this.setDescription(todoBase.getDescription());
+        this.setDueDate(todoBase.getDueDate());
+        this.setTitle(todoBase.getTitle());
+        this.setDone(todoBase.isDone());
     }
 
     /**
@@ -60,9 +56,9 @@ public class TodoFull extends TodoBase {
 
     public TodoFull(TodoList todoList) {
 
-        super.setDueDate(todoList.getDueDate());
-        super.setTitle(todoList.getTitle());
-        this.done = todoList.isDone();
+        this.setDueDate(todoList.getDueDate());
+        this.setTitle(todoList.getTitle());
+        this.setDone(todoList.isDone());
     }
 
     public TodoFull id(Integer id) {

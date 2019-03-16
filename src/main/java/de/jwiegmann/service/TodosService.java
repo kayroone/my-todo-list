@@ -2,10 +2,10 @@ package de.jwiegmann.service;
 
 import de.jwiegmann.model.TodoBase;
 import de.jwiegmann.model.TodoFull;
+import de.jwiegmann.model.TodosPageRequest;
 import de.jwiegmann.repository.TodosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -43,14 +43,15 @@ public class TodosService {
 
     public Page<TodoFull> getTodos(String state, Integer limit, Integer offset) {
 
-        if (state.equals("unfinished")) {
-            state = "done";
-        } else {
-            state = null;
-        }
+        Pageable pageable = new TodosPageRequest(offset, limit, Sort.DEFAULT_DIRECTION, "id");
 
-        Pageable pageable = new PageRequest(offset, limit, Sort.Direction.ASC, state);
-        return this.todosRepository.findAll(pageable);
+        if (state.equalsIgnoreCase("all")) {
+            return this.todosRepository.findAll(pageable);
+        } else if (state.equalsIgnoreCase("unfinished")) {
+            return this.todosRepository.findAllByDone(false, pageable);
+        } else {
+            return this.todosRepository.findAllByDone(true, pageable);
+        }
     }
 
     public Optional<TodoFull> updateTodo(Integer todoId, TodoBase todoBase) {

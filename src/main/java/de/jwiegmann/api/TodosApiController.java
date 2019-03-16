@@ -12,8 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.util.Optional;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-03-15T21:20:24.293Z")
@@ -103,14 +101,14 @@ public class TodosApiController implements TodosApi {
      */
     @Override
     public ResponseEntity getTodos(@RequestParam(required = false, defaultValue = "unfinished") String state,
-        @Min(0) @Max(10) @RequestParam(required = false, defaultValue = "5") Integer limit,
-        @Min(0) @Max(100) @RequestParam(required = false) Integer offset)
+        @RequestParam(required = false, defaultValue = "5") Integer limit,
+        @RequestParam(required = false, defaultValue = "0") Integer offset)
     {
 
         Page<TodoFull> foundTodos = this.todosService.getTodos(state, limit, offset);
 
         // Without offset - maximum result of 5 items:
-        if (foundTodos.hasContent() && offset == null) {
+        if (foundTodos.hasContent() && offset == 0) {
             return new ResponseEntity<Page<TodoFull>>(foundTodos, HttpStatus.OK);
         }
 

@@ -18,7 +18,6 @@ import java.util.Objects;
 @ApiModel(description = "A base todo used for creation and modification.")
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-03-15T21:20:24.293Z")
-
 @MappedSuperclass
 public class TodoBase {
 
