@@ -21,15 +21,19 @@ import java.util.Objects;
 @MappedSuperclass
 public class TodoBase {
 
+    @NotNull
     @JsonProperty("title")
     private String title = null;
 
+    @NotNull
     @JsonProperty("description")
     private String description = null;
 
+    @NotNull
     @JsonProperty("dueDate")
     private OffsetDateTime dueDate = null;
 
+    @NotNull
     @JsonProperty("done")
     private Boolean done = null;
 

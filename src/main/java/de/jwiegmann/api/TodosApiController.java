@@ -107,23 +107,22 @@ public class TodosApiController implements TodosApi {
 
         Page<TodoFull> foundTodos = this.todosService.getTodos(state, limit, offset);
 
-        // Without offset - maximum result of 5 items:
-        if (foundTodos.hasContent() && offset == 0) {
-            return new ResponseEntity<Page<TodoFull>>(foundTodos, HttpStatus.OK);
+        // No items found:
+        if (!foundTodos.hasContent()) {
+            return new ResponseEntity<>(foundTodos, HttpStatus.NO_CONTENT);
         }
 
-        // With offset:
-        else if (foundTodos.hasContent() && offset != null) {
+        // More items found than specified range:
+        if (foundTodos.getTotalPages() > 1) {
             return new ResponseEntity<Page<TodoFull>>(foundTodos, HttpStatus.PARTIAL_CONTENT);
         }
 
-        // No items found:
-        else if (!foundTodos.hasContent()) {
-            return new ResponseEntity<>(foundTodos, HttpStatus.NO_CONTENT);
-
+        // Items found within specified range:
+        else if (foundTodos.getTotalPages() == 1) {
+            return new ResponseEntity<Page<TodoFull>>(foundTodos, HttpStatus.OK);
         }
 
-        // Entities could not be processed:
+        // Ententies can not be processed:
         else {
             return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         }
@@ -146,7 +145,7 @@ public class TodosApiController implements TodosApi {
         if (updatedTodo.isPresent()) {
             return new ResponseEntity<>(updatedTodo.get(), HttpStatus.NO_CONTENT);
         } else {
-            return new ResponseEntity<>(updatedTodo.get(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
