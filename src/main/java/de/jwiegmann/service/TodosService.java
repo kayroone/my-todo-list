@@ -12,17 +12,41 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * Main To Do service. Provides To Do item CRUD operations.
+ */
+
 @Service
 public class TodosService {
 
+    private final static String TODO_IDENTIFIER = "id";
+    private final static String TODO_STATE_ALL = "all";
+    private final static String TODO_STATE_UNFINISHED = "unfinished";
+
     @Autowired
     TodosRepository todosRepository;
+
+    /**
+     * Create and persist a new To Do item.
+     *
+     * @param todoBase The To Do item.
+     *
+     * @return Optional containing the To Do item if store was successful.
+     */
 
     public Optional<TodoFull> createTodo(TodoBase todoBase) {
 
         TodoFull todoFull = new TodoFull(todoBase);
         return Optional.of(this.todosRepository.save(todoFull));
     }
+
+    /**
+     * Delete and persist existing To Do item.
+     *
+     * @param todoId The To Do item ID.
+     *
+     * @return true if the To Do item was deleted successful or false if not.
+     */
 
     public boolean deleteTodo(Integer todoId) {
 
@@ -36,23 +60,53 @@ public class TodosService {
         }
     }
 
+    /**
+     * Get a single To Do item by it's ID.
+     *
+     * @param todoId The To Do item ID.
+     *
+     * @return Optional containing the To Do item if the item could be found.
+     */
+
     public Optional<TodoFull> getTodo(Integer todoId) {
 
         return this.todosRepository.findById(todoId);
     }
 
+    /**
+     * Get all To Do items sorted by their ID (ASC) as pageable.
+     *
+     * @param state  State of the returned To Do items (finished, unfinished, all).
+     * @param limit  Maximum To Do items per page.
+     * @param offset Define the number from which elements are to be returned.
+     *
+     * @return Page object containing the sorted and filtered To Do items.
+     */
+
     public Page<TodoFull> getTodos(String state, Integer limit, Integer offset) {
 
-        Pageable pageable = new TodosPageRequest(offset, limit, Sort.DEFAULT_DIRECTION, "id");
+        Pageable pageable = new TodosPageRequest(offset, limit, Sort.DEFAULT_DIRECTION, TODO_IDENTIFIER);
 
-        if (state.equalsIgnoreCase("all")) {
+        if (state.equalsIgnoreCase(TODO_STATE_ALL)) {
+
             return this.todosRepository.findAll(pageable);
-        } else if (state.equalsIgnoreCase("unfinished")) {
+        } else if (state.equalsIgnoreCase(TODO_STATE_UNFINISHED)) {
+
             return this.todosRepository.findAllByDone(false, pageable);
         } else {
+
             return this.todosRepository.findAllByDone(true, pageable);
         }
     }
+
+    /**
+     * Update an existing To Do item.
+     *
+     * @param todoId   The To Do item ID.
+     * @param todoBase The To Do item holding the changes.
+     *
+     * @return Optional with updated To Do item if update was successful.
+     */
 
     public Optional<TodoFull> updateTodo(Integer todoId, TodoBase todoBase) {
 

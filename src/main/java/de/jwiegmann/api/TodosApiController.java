@@ -90,10 +90,10 @@ public class TodosApiController implements TodosApi {
     }
 
     /**
-     * Get all existing To Do items.
+     * Get all To Do items sorted by their ID (ASC) as pageable.
      *
-     * @param state  State of the To Do item (e.g. unfinished).
-     * @param limit  Limit the number of To Do items returned.
+     * @param state  State of the returned To Do items (finished, unfinished, all).
+     * @param limit  Maximum To Do items per page.
      * @param offset Define the number from which elements are to be returned.
      *
      * @return HTTP status 200 with a list of To Do items as JSON body, HTTP status 206 with the partial requested
@@ -112,7 +112,7 @@ public class TodosApiController implements TodosApi {
             return new ResponseEntity<>(foundTodos, HttpStatus.NO_CONTENT);
         }
 
-        // More items found than specified range:
+        // More items found than specified:
         if (foundTodos.getTotalPages() > 1) {
             return new ResponseEntity<Page<TodoFull>>(foundTodos, HttpStatus.PARTIAL_CONTENT);
         }
@@ -132,7 +132,7 @@ public class TodosApiController implements TodosApi {
      * Update an existing To Do item.
      *
      * @param todoId The To Do item ID
-     * @param body   The JSON body containing the changes.
+     * @param body   The JSON body holding the changes.
      *
      * @return HTTP status 204 with the updated To Do items as JSON body,
      * HTTP status 400 if there was an error modifying the To Do item or HTTP status 404 if the To Do item could not be found.
