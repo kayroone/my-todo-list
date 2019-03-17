@@ -30,7 +30,7 @@ public class TodosServiceTest {
     @Test
     public void createUserAndCheckServiceResponse() {
 
-        // 1. Arrange
+        // 1. Arrange:
         TodoBase todoBase = new TodoBase();
 
         todoBase.setDescription("foo");
@@ -45,13 +45,13 @@ public class TodosServiceTest {
 
         todoFull.setId(1);
 
-        // 2. Action
+        // 2. Action:
         when(this.todosRepository.save(todoFull)).then(returnsFirstArg());
         when(this.todosService.createTodo(todoBase)).then(returnsFirstArg());
 
         Optional<TodoFull> newTodo = todosService.createTodo(todoBase);
 
-        // 3. Assert
+        // 3. Assert:
         assertTrue(newTodo.isPresent());
         assertThat(newTodo.get()).hasDescription();
         assertThat(newTodo.get()).hasDueDate();
