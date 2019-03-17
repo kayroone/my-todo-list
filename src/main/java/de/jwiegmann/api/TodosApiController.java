@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.jwiegmann.model.TodoBase;
 import de.jwiegmann.model.TodoFull;
 import de.jwiegmann.service.TodosService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,24 +12,21 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Optional;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-03-15T21:20:24.293Z")
+/**
+ * Main To Do controller. Provides To Do CRUD operations as API endpoint.
+ */
 
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-03-15T21:20:24.293Z")
 @Controller
+@RequiredArgsConstructor
 public class TodosApiController implements TodosApi {
 
     private final ObjectMapper objectMapper;
     private final HttpServletRequest request;
-
-    @Autowired
-    TodosService todosService;
-
-    @Autowired
-    public TodosApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        this.objectMapper = objectMapper;
-        this.request = request;
-    }
+    private final TodosService todosService;
 
     /**
      * Create a new To Do item.
@@ -100,8 +97,7 @@ public class TodosApiController implements TodosApi {
      * To Do items, HTTP status 204 if there are no To Do items, or HTTP status 400 for invalid query params.
      */
     @Override
-    public ResponseEntity getTodos(@RequestParam(required = false, defaultValue = "unfinished") String state,
-        @RequestParam(required = false, defaultValue = "5") Integer limit,
+    public ResponseEntity getTodos(@RequestParam(required = false, defaultValue = "unfinished") String state, @RequestParam(required = false, defaultValue = "5") Integer limit,
         @RequestParam(required = false, defaultValue = "0") Integer offset)
     {
 
@@ -109,17 +105,17 @@ public class TodosApiController implements TodosApi {
 
         // No items found:
         if (!foundTodos.hasContent()) {
-            return new ResponseEntity<>(foundTodos, HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
         // More items found than specified:
         if (foundTodos.getTotalPages() > 1) {
-            return new ResponseEntity<Page<TodoFull>>(foundTodos, HttpStatus.PARTIAL_CONTENT);
+            return new ResponseEntity<List<TodoFull>>(foundTodos.getContent(), HttpStatus.PARTIAL_CONTENT);
         }
 
         // Items found within specified range:
         else if (foundTodos.getTotalPages() == 1) {
-            return new ResponseEntity<Page<TodoFull>>(foundTodos, HttpStatus.OK);
+            return new ResponseEntity<List<TodoFull>>(foundTodos.getContent(), HttpStatus.OK);
         }
 
         // Ententies can not be processed:

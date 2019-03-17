@@ -6,7 +6,7 @@ import org.springframework.data.domain.Sort;
 import java.io.Serializable;
 
 /**
- * Better implementation of PageRequest for setting offset and limit.
+ * To Do PageRequest for setting offset and limit directly on the object.
  */
 public class TodosPageRequest implements Pageable, Serializable {
 

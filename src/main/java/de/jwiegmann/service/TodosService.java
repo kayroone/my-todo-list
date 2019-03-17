@@ -4,7 +4,7 @@ import de.jwiegmann.model.TodoBase;
 import de.jwiegmann.model.TodoFull;
 import de.jwiegmann.model.TodosPageRequest;
 import de.jwiegmann.repository.TodosRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,18 +13,18 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 /**
- * Main To Do service. Provides To Do item CRUD operations.
+ * Main To Do service. Provides paging, sorting and CRUD operations.
  */
 
 @Service
+@RequiredArgsConstructor
 public class TodosService {
 
     private final static String TODO_IDENTIFIER = "id";
     private final static String TODO_STATE_ALL = "all";
     private final static String TODO_STATE_UNFINISHED = "unfinished";
 
-    @Autowired
-    TodosRepository todosRepository;
+    private final TodosRepository todosRepository;
 
     /**
      * Create and persist a new To Do item.

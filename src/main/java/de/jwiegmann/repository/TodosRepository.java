@@ -6,6 +6,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
+/**
+ * Main To Do Repository. Provides paging, sorting and CRUD operations.
+ */
+
 @Repository
 public interface TodosRepository extends PagingAndSortingRepository<TodoFull, Integer> {
 
