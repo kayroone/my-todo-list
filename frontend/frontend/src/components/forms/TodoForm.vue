@@ -1,20 +1,24 @@
 <template>
   <div>
-    <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+    <b-form @submit.prevent="createTodo">
       <b-form-group id="todo-inputs" v-model="form.todo">
 
+        <!-- Title -->
         <b-form-input id="todo-title" type="text"
                       v-model="form.title" required
                       placeholder="Enter title"/>
 
+        <!-- Description -->
         <b-form-textarea id="todo-description"
                          v-model="form.description"
                          placeholder="Enter description"/>
 
-        <todo-date-picker id="todo-date"></todo-date-picker>
+        <!-- Date -->
+        <todo-date-picker id="todo-date" v-model="form.date" required></todo-date-picker>
 
       </b-form-group>
 
+      <!-- Submit and add -->
       <b-button id="todo-add" type="submit" variant="success">Add</b-button>
 
     </b-form>
@@ -30,34 +34,15 @@
     data() {
       return {
         form: {
-          email: '',
-          name: '',
-          food: null,
-          checked: []
-        },
-        foods: [{text: 'Select One', value: null}, 'Carrots', 'Beans', 'Tomatoes', 'Corn'],
-        show: true
+          title: '',
+          description: '',
+          date: null,
+        }
       }
     },
     methods: {
-      onSubmit(evt) {
-
-        evt.preventDefault();
-        alert(JSON.stringify(this.form))
-      },
-      onReset(evt) {
-
-        evt.preventDefault();
-        /* Reset our form values */
-        this.form.email = '';
-        this.form.name = '';
-        this.form.food = null;
-        this.form.checked = [];
-        /* Trick to reset/clear native browser form validation state */
-        this.show = false;
-        this.$nextTick(() => {
-          this.show = true
-        })
+      createTodo() {
+        console.dir(this.form.title);
       }
     }
   }

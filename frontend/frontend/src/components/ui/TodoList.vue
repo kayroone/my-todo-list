@@ -2,7 +2,7 @@
     <div class="container-fluid">
       <div class="wrapper-main">
 
-        <p v-if="loading">Loading&hellip;</p>
+        <p v-if="loading"></p>
         <div v-else>
           <ul class="list-inline">
             <li class="list-inline-item" v-for="(todo, index) in todosSortedByDate" v-bind:key="todo.id">
