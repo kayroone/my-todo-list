@@ -79,8 +79,7 @@ public class TodosApiControllerTest {
             .andExpect(jsonPath("$.description", is(testDescription)))
             .andExpect(jsonPath("$.dueDate", is(testDueDate)))
             .andExpect(jsonPath("$.title", is(testTitle)))
-            .andExpect(jsonPath("$.done", is(testDoneValue)))
-            .andReturn();
+            .andExpect(jsonPath("$.done", is(testDoneValue)));
 
         // 3. Cleanup:
         removeAllToDos();
@@ -124,8 +123,10 @@ public class TodosApiControllerTest {
         TodoFull todoFull = createToDo();
 
         // 2. Action/Assert:
-        this.mvc.perform(get("/todos/" + todoFull.getId())).andExpect(status().isOk())
+        this.mvc.perform(get("/todos/" + todoFull.getId()).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
             .andExpect(jsonPath("$.description", is(testDescription)))
+            .andExpect(jsonPath("$.dueDate", is("2019-03-18T11:20:43.563+01:00")))
             .andExpect(jsonPath("$.title", is(testTitle)))
             .andExpect(jsonPath("$.done", is(testDoneValue)));
 
