@@ -40,3 +40,8 @@ Thumbs.db
 #############
 .idea
 *.iml
+
+# Project related #
+#############
+resources/public
+target
