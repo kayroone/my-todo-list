@@ -87,6 +87,20 @@ public interface TodosApi {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
+    @ApiOperation(value = "Delete all Todos", nickname = "deleteTodos", notes = "Delete all existing todos.", tags={ "Todos", })
+    @ApiResponses(value = {
+        @ApiResponse(code = 204, message = "Todos deleted."),
+        @ApiResponse(code = 404, message = "Todos not found.") })
+    @RequestMapping(value = "/todos", method = RequestMethod.DELETE)
+    default ResponseEntity<Void> deleteAllTodos()
+    {
+        if (getObjectMapper().isPresent() && getAcceptHeader().isPresent()) {
+        } else {
+            log.warn(
+                "ObjectMapper or HttpServletRequest not configured in default TodosApi interface so no example is generated");
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
     @ApiOperation(value = "Get Todo", nickname = "getTodo", notes = "Request an existing todo.", response = TodoFull.class, tags={ "Todos", })
     @ApiResponses(value = { 

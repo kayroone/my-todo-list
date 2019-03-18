@@ -61,6 +61,19 @@ public class TodosService {
     }
 
     /**
+     * Delete all To Do items.
+     *
+     * @return true if the To Do items were deleted successfully or false if not.
+     */
+
+    public boolean deleteAll() {
+
+        this.todosRepository.deleteAll();
+
+        return this.todosRepository.findAll().spliterator().getExactSizeIfKnown() == 0;
+    }
+
+    /**
      * Get a single To Do item by it's ID.
      *
      * @param todoId The To Do item ID.

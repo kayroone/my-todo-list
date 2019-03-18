@@ -94,7 +94,6 @@ public class TodoBase {
     @NotNull
 
     @Valid
-
     public OffsetDateTime getDueDate() {
         return dueDate;
     }

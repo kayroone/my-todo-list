@@ -50,17 +50,6 @@ public class TodosPageRequest implements Pageable, Serializable {
         this(offset, limit, new Sort(direction, properties));
     }
 
-    /**
-     * Creates a new {@link TodosPageRequest} with sort parameters applied.
-     *
-     * @param offset zero-based offset.
-     * @param limit  the size of the elements to be returned.
-     */
-    public TodosPageRequest(int offset, int limit) {
-
-        this(offset, limit, new Sort(Sort.Direction.ASC, "id"));
-    }
-
     @Override
     public int getPageNumber() {
 

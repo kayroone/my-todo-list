@@ -1,37 +1,36 @@
 package de.jwiegmann.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import de.jwiegmann.app.RFC3339DateFormat;
 import de.jwiegmann.model.TodoBase;
 import de.jwiegmann.model.TodoFull;
-import de.jwiegmann.service.TodosService;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
-import java.time.Clock;
+import java.text.ParseException;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.ZoneOffset;
+import java.util.Date;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest
+@SpringBootTest
+@AutoConfigureMockMvc
 public class TodosApiControllerTest {
 
     @Autowired
@@ -40,57 +39,58 @@ public class TodosApiControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
-    private TodosService todosService;
+    private TodoBase todoBase;
+    private RFC3339DateFormat dateFormat;
+
+    /**
+     * Test values
+     */
+
+    private static final String testDescription = "foo";
+    private static final Boolean testDoneValue = false;
+    private static final String testDueDate = "2019-03-18T10:20:43.563Z";
+    private static final String testTitle = "bar";
+
+    @Before
+    public void setUp() {
+
+        // Set correct date format:
+        this.dateFormat = new RFC3339DateFormat();
+
+        // Prepare object mapper:
+        this.objectMapper.setDateFormat(this.dateFormat);
+        this.objectMapper.registerModule(new JavaTimeModule());
+        this.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        // Initialize test To Do object:
+        this.initTestTodo();
+    }
 
     @Test
     public void createTodoWithValidData() throws Exception {
 
         // 1. Arrange:
-        TodoBase todoBase = new TodoBase();
-
-        todoBase.setDescription("foo");
-        todoBase.setDone(false);
-
-        OffsetDateTime dateTime = OffsetDateTime.now(Clock.systemDefaultZone());
-        todoBase.setDueDate(dateTime);
-
-        todoBase.setTitle("bar");
-
-        String requestJsonBody = objectMapper.writeValueAsString(todoBase);
-
-        TodoFull todoFull = new TodoFull(todoBase);
-        todoFull.setId(1);
+        String requestJsonBody = this.objectMapper.writeValueAsString(this.todoBase);
 
         // 2. Action/Assert:
-        when(this.todosService.createTodo(any(TodoBase.class))).thenReturn(Optional.of(todoFull));
-
-        this.mvc.perform(post("/todos").contentType(MediaType.APPLICATION_JSON).content(requestJsonBody))
-            .andExpect(status().isCreated()).andExpect(jsonPath("$.description", is(todoFull.getDescription())))
-            .andExpect(jsonPath("$.dueDate", is(todoFull.getDueDate().toString())))
-            .andExpect(jsonPath("$.title", is(todoFull.getTitle()))).andExpect(jsonPath("$.done", is(todoFull.isDone())));
+        MvcResult mvcResult = this.mvc.perform(post("/todos")
+            .contentType(MediaType.APPLICATION_JSON).content(requestJsonBody))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.description", is(testDescription)))
+            .andExpect(jsonPath("$.dueDate", is(testDueDate)))
+            .andExpect(jsonPath("$.title", is(testTitle)))
+            .andExpect(jsonPath("$.done", is(testDoneValue)))
+            .andReturn();
     }
 
     @Test
     public void createTodoWithIncompleteData() throws Exception {
 
         // 1. Arrange:
-        TodoBase todoBase = new TodoBase();
-
-        todoBase.setDescription("foo");
-        todoBase.setDone(false);
-
-        OffsetDateTime dateTime = OffsetDateTime.now(Clock.systemDefaultZone());
-        todoBase.setDueDate(dateTime);
-
-        String requestJsonBody = objectMapper.writeValueAsString(todoBase);
-
-        TodoFull todoFull = new TodoFull(todoBase);
-        todoFull.setId(1);
+        this.todoBase.setTitle("");
+        String requestJsonBody = this.objectMapper.writeValueAsString(this.todoBase);
 
         // 2. Action/Assert:
-        when(this.todosService.createTodo(any(TodoBase.class))).thenReturn(Optional.of(todoFull));
-
         this.mvc.perform(post("/todos").contentType(MediaType.APPLICATION_JSON).content(requestJsonBody))
             .andExpect(status().isBadRequest());
     }
@@ -98,161 +98,171 @@ public class TodosApiControllerTest {
     @Test
     public void deleteExistingTodo() throws Exception {
 
-        when(this.todosService.deleteTodo(anyInt())).thenReturn(true);
+        // 1. Arrange:
+        TodoFull todoFull = createToDo();
 
-        this.mvc.perform(delete("/todos/" + 1)).andExpect(status().isNoContent());
+        // 2. Action/Assert:
+        this.mvc.perform(delete("/todos/" + todoFull.getId()))
+            .andExpect(status().isNoContent());
     }
 
     @Test
     public void deleteNoneExistingTodo() throws Exception {
 
-        when(this.todosService.deleteTodo(anyInt())).thenReturn(false);
-
-        this.mvc.perform(delete("/todos/" + 1)).andExpect(status().isNotFound());
+        // 1. Action/Assert:
+        this.mvc.perform(delete("/todos/" + 4))
+            .andExpect(status().isNotFound());
     }
 
     @Test
     public void getExistingTodo() throws Exception {
 
         // 1. Arrange:
-        TodoBase todoBase = new TodoBase();
-
-        todoBase.setDescription("foo");
-        todoBase.setDone(false);
-
-        OffsetDateTime dateTime = OffsetDateTime.now(Clock.systemDefaultZone());
-        todoBase.setDueDate(dateTime);
-
-        todoBase.setTitle("bar");
-
-        TodoFull todoFull = new TodoFull(todoBase);
-        todoFull.setId(1);
+        TodoFull todoFull = createToDo();
 
         // 2. Action/Assert:
-        when(this.todosService.getTodo(todoFull.getId())).thenReturn(Optional.of(todoFull));
-
         this.mvc.perform(get("/todos/" + todoFull.getId())).andExpect(status().isOk())
-            .andExpect(jsonPath("$.description", is(todoFull.getDescription())))
-            .andExpect(jsonPath("$.dueDate", is(todoFull.getDueDate().toString())))
-            .andExpect(jsonPath("$.title", is(todoFull.getTitle()))).andExpect(jsonPath("$.done", is(todoFull.isDone())));
+            .andExpect(jsonPath("$.description", is(testDescription)))
+            .andExpect(jsonPath("$.title", is(testTitle)))
+            .andExpect(jsonPath("$.done", is(testDoneValue)));
+
+        // 3. Cleanup:
+        removeAllToDos();
     }
 
     @Test
     public void getNoneExistingTodo() throws Exception {
 
-        when(this.todosService.getTodo(anyInt())).thenReturn(Optional.empty());
-
-        this.mvc.perform(get("/todos/" + 1)).andExpect(status().isNotFound());
+        // 1. Action/Assert:
+        this.mvc.perform(get("/todos/" + 9000))
+            .andExpect(status().isNotFound());
     }
 
     @Test
     public void getAllExistingTodos() throws Exception {
 
-        // 1. Arrange
-        List<TodoFull> todos = new ArrayList<>();
-
+        // 1. Arrange:
         for (int i = 0; i < 5; i++) {
-
-            TodoBase todoBase = new TodoBase();
-
-            todoBase.setDescription("foo" + i);
-            todoBase.setDone(false);
-
-            OffsetDateTime dateTime = OffsetDateTime.now(Clock.systemDefaultZone());
-            todoBase.setDueDate(dateTime);
-
-            todoBase.setTitle("bar" + i);
-
-            TodoFull todoFull = new TodoFull(todoBase);
-            todoFull.setId(i);
-
-            todos.add(todoFull);
+            createToDo();
         }
 
-        Page<TodoFull> pagedResponse = new PageImpl(todos);
+        // 2. Action/Assert:
+        this.mvc.perform(get("/todos")).andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(5)));
 
-        // 2. Action/Assert
-        when(this.todosService.getTodos(anyString(), anyInt(), anyInt())).thenReturn(pagedResponse);
-
-        this.mvc.perform(get("/todos")).andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(5)));
+        // 3. Cleanup:
+        removeAllToDos();
     }
 
     @Test
     public void getNoneExistingTodos() throws Exception {
 
-        // 1. Arrange
-        Page<TodoFull> pagedResponse = mock(Page.class);
-
-        // 2. Action/Assert
-        when(this.todosService.getTodos(anyString(), anyInt(), anyInt())).thenReturn(pagedResponse);
-        when(pagedResponse.hasContent()).thenReturn(false);
-
-        this.mvc.perform(get("/todos")).andExpect(status().isNoContent());
+        // 1. Action/Assert:
+        this.mvc.perform(get("/todos"))
+            .andExpect(status().isNoContent());
     }
 
     @Test
     public void getPartialExistingTodos() throws Exception {
 
-        // 1. Arrange
-        Page<TodoFull> pagedResponse = mock(Page.class);
+        // 1. Arrange:
+        for (int i = 0; i < 10; i++) {
+            createToDo();
+        }
 
-        // 2. Action/Assert
-        when(this.todosService.getTodos(anyString(), anyInt(), anyInt())).thenReturn(pagedResponse);
-        when(pagedResponse.hasContent()).thenReturn(true);
-        when(pagedResponse.getTotalPages()).thenReturn(2);
+        // 2. Action/Assert:
+        this.mvc.perform(get("/todos"))
+            .andExpect(status().isPartialContent());
 
-        this.mvc.perform(get("/todos")).andExpect(status().isPartialContent());
+        // 3. Cleanup:
+        removeAllToDos();
     }
 
     @Test
     public void updateExistingTodo() throws Exception {
 
         // 1. Arrange:
-        TodoBase todoBase = new TodoBase();
+        TodoFull todoFull = createToDo();
 
-        todoBase.setDescription("foo");
-        todoBase.setDone(false);
+        this.todoBase.setDescription("barfoo");
+        this.todoBase.setTitle("foobar");
+        this.todoBase.setDone(true);
+        this.todoBase.setDueDate(getDateTime("2019-03-16T20:14:57.445Z"));
 
-        OffsetDateTime dateTime = OffsetDateTime.now(Clock.systemDefaultZone());
-        todoBase.setDueDate(dateTime);
-
-        todoBase.setTitle("bar");
-
-        String requestJsonBody = objectMapper.writeValueAsString(todoBase);
-
-        TodoFull todoFull = new TodoFull(todoBase);
-        todoFull.setId(1);
+        String requestJsonBody = this.objectMapper.writeValueAsString(this.todoBase);
 
         // 2. Action/Assert:
-        when(this.todosService.updateTodo(anyInt(), any(TodoBase.class))).thenReturn(Optional.of(todoFull));
-
-        this.mvc.perform(put("/todos/" + 1).contentType(MediaType.APPLICATION_JSON).content(requestJsonBody))
+        this.mvc.perform(put("/todos/" + todoFull.getId())
+            .contentType(MediaType.APPLICATION_JSON).content(requestJsonBody))
             .andExpect(status().isNoContent());
+
+        // 3. Cleanup:
+        removeAllToDos();
     }
 
     @Test
     public void updateNoneExistingTodo() throws Exception {
 
         // 1. Arrange:
-        TodoBase todoBase = new TodoBase();
+        this.todoBase.setDescription("barfoo");
+        this.todoBase.setTitle("foobar");
+        this.todoBase.setDone(true);
+        this.todoBase.setDueDate(getDateTime("2019-03-16T20:14:57.445Z"));
 
-        todoBase.setDescription("foo");
-        todoBase.setDone(false);
-
-        OffsetDateTime dateTime = OffsetDateTime.now(Clock.systemDefaultZone());
-        todoBase.setDueDate(dateTime);
-
-        todoBase.setTitle("bar");
-
-        String requestJsonBody = objectMapper.writeValueAsString(todoBase);
-
-        TodoFull todoFull = new TodoFull(todoBase);
-        todoFull.setId(1);
+        String requestJsonBody = this.objectMapper.writeValueAsString(this.todoBase);
 
         // 2. Action/Assert:
-        when(this.todosService.updateTodo(anyInt(), any(TodoBase.class))).thenReturn(Optional.empty());
-
-        this.mvc.perform(put("/todos/" + 1).contentType(MediaType.APPLICATION_JSON).content(requestJsonBody))
+        this.mvc.perform(put("/todos/" + 4).contentType(MediaType.APPLICATION_JSON).content(requestJsonBody))
             .andExpect(status().isNotFound());
+    }
+
+    // TEST HELPERS --------------------------------------------------------------------------------------------------------
+
+
+    private void initTestTodo() {
+
+        this.todoBase = new TodoBase();
+
+        this.todoBase.setDescription(testDescription);
+        this.todoBase.setDone(testDoneValue);
+        this.todoBase.setDueDate(getDateTime(testDueDate));
+        this.todoBase.setTitle(testTitle);
+    }
+
+    private OffsetDateTime getDateTime(String dateString) {
+
+        Date date = null;
+        try {
+            date = this.dateFormat.parse(dateString);
+        } catch (ParseException pe) {
+            // Ignore
+        }
+
+        OffsetDateTime dateTime = null;
+        if (date != null) {
+            dateTime = date.toInstant().atOffset(ZoneOffset.UTC);
+        }
+
+        return dateTime;
+    }
+
+    private TodoFull createToDo() throws Exception {
+
+        String jsonRequestString = this.objectMapper.writeValueAsString(this.todoBase);
+
+        MvcResult mvcResult = this.mvc.perform(post("/todos")
+            .content(jsonRequestString)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
+
+        String jsonResponseString = mvcResult.getResponse().getContentAsString();
+
+        return this.objectMapper.readValue(jsonResponseString, TodoFull.class);
+    }
+
+    private void removeAllToDos() throws Exception {
+
+        this.mvc.perform(delete("/todos"))
+            .andExpect(status().isNoContent());
     }
 }

@@ -68,6 +68,23 @@ public class TodosApiController implements TodosApi {
     }
 
     /**
+     * Delete all existing To Do items.
+     *
+     * @return HTTP status 204 for a successful deletion or HTTP status 404 if the To Do items could not be found.
+     */
+    @Override
+    public ResponseEntity<Void> deleteAllTodos() {
+
+        boolean successfulDeleted = this.todosService.deleteAll();
+
+        if (successfulDeleted) {
+            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    /**
      * Get a single To Do item.
      *
      * @param todoId The To Do item ID.
