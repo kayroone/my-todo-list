@@ -1,4 +1,5 @@
 import {frontendConfig} from '../config/frontend-config.js'
+import $ from 'jquery'
 
 /**
  * Export all To Do service CRUD methods via todoService object.
@@ -26,7 +27,8 @@ function createTodo(todoBase) {
   const requestProperties = {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(todoBase)
+    body: JSON.stringify(todoBase),
+    mode: 'cors'
   };
 
   return fetch(`${frontendConfig.apiUrl}`, requestProperties)
@@ -89,9 +91,10 @@ function getTodos(state, limit, offset) {
 
   const requestOptions = {
     method: 'GET',
+    mode: 'cors'
   };
 
-  const fetchUrl = `${frontendConfig.apiUrl}` +
+  const fetchUrl = `${frontendConfig.apiUrl}` + "?" +
     $.param({state: state, limit: limit, offset: offset});
 
   return fetch(fetchUrl, requestOptions)

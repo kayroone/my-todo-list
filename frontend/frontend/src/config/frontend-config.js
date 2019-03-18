@@ -1,4 +1,4 @@
 
 export const frontendConfig = {
-  apiUrl: 'http://localhost:9080/todos/'
+  apiUrl: 'http://localhost:9080/todos'
 };

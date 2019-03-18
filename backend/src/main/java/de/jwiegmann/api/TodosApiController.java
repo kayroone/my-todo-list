@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +23,7 @@ import java.util.Optional;
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-03-15T21:20:24.293Z")
 @Controller
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:8080")
 public class TodosApiController implements TodosApi {
 
     private final ObjectMapper objectMapper;
@@ -114,7 +116,8 @@ public class TodosApiController implements TodosApi {
      * To Do items, HTTP status 204 if there are no To Do items, or HTTP status 400 for invalid query params.
      */
     @Override
-    public ResponseEntity getTodos(@RequestParam(required = false, defaultValue = "unfinished") String state, @RequestParam(required = false, defaultValue = "5") Integer limit,
+    public ResponseEntity getTodos(@RequestParam(required = false, defaultValue = "unfinished") String state,
+        @RequestParam(required = false, defaultValue = "5") Integer limit,
         @RequestParam(required = false, defaultValue = "0") Integer offset)
     {
 
