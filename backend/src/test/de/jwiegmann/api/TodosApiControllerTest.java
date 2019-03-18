@@ -73,7 +73,7 @@ public class TodosApiControllerTest {
         String requestJsonBody = this.objectMapper.writeValueAsString(this.todoBase);
 
         // 2. Action/Assert:
-        MvcResult mvcResult = this.mvc.perform(post("/todos")
+        this.mvc.perform(post("/todos")
             .contentType(MediaType.APPLICATION_JSON).content(requestJsonBody))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.description", is(testDescription)))
@@ -81,6 +81,9 @@ public class TodosApiControllerTest {
             .andExpect(jsonPath("$.title", is(testTitle)))
             .andExpect(jsonPath("$.done", is(testDoneValue)))
             .andReturn();
+
+        // 3. Cleanup:
+        removeAllToDos();
     }
 
     @Test
