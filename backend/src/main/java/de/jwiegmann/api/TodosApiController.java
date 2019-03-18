@@ -18,6 +18,8 @@ import java.util.Optional;
 
 /**
  * Main To Do controller. Provides To Do CRUD operations as API endpoint.
+ *
+ * Allowing CORS requests from frontend application at http://localhost:8080.
  */
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-03-15T21:20:24.293Z")

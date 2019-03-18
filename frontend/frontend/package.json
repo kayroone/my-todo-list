@@ -15,7 +15,8 @@
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.0-rc.15",
     "jquery": "^3.3.1",
-    "vue": "^2.6.9"
+    "vue": "^2.6.9",
+    "vue-bootstrap-datetimepicker": "^5.0.1"
   },
   "devDependencies": {
     "acorn": "^6.1.1",
