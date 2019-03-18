@@ -1,139 +1,124 @@
 import {frontendConfig} from '../config/frontend-config.js'
-import {authHeader} from '../helpers'
 
 /**
- * Export all user service CRUD methods via todoService object.
+ * Export all To Do service CRUD methods via todoService object.
  *
- * @type {{logout: logout, getAll: *, getById: (getById|*), update: *, login: *, delete: *, register: _register}}
+ * @type {{getTodos: (function(*=, *=, *=): *), updateTodo: (function(*=): *), getTodo: (function(*): *), deleteTodo: (function(*): *), createTodo: (function(*=): *)}}
  */
 
 export const todoService = {
-  login,
-  logout,
-  register,
-  getAll,
-  getById,
-  update,
-  delete: _delete
-}
+  createTodo,
+  deleteTodo,
+  getTodo,
+  getTodos,
+  updateTodo,
+};
 
 /**
- * Authenticate a user with it's username and password.
+ * Create a new To Do item.
  *
- * @param username
- * @param password
+ * @param todoBase Object holding the To Do data.
  * @returns {Promise<Response | never>}
  */
 
-function login (username, password) {
+function createTodo(todoBase) {
+
   const requestProperties = {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({username, password})
-  }
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(todoBase)
+  };
 
-  return fetch(`${frontendConfig.apiUrl}/users/authenticate`, requestProperties)
-    .then(handleResponse)
-    .then(user => {
-      // Login if JWT is present:
-      if (user.token) {
-        localStorage.setItem('user', JSON.stringify(user))
-      }
-
-      return user
+  return fetch(`${frontendConfig.apiUrl}`, requestProperties)
+    .then(handleJsonResponse)
+    .then(data => {
+      return data
     })
 }
 
 /**
- * Logout the active user.
+ * Delete an existing To Do item.
+ *
+ * @param todoId The To Do item ID.
+ * @returns {*}
  */
 
-function logout () {
-  localStorage.removeItem('user')
+function deleteTodo(todoId) {
+
+  const requestProperties = {
+    method: 'DELETE',
+  };
+
+  const fetchUrl = `${frontendConfig.apiUrl}` + todoId;
+
+  return fetch(fetchUrl, requestProperties)
+    .then(response => {
+      return response.status
+    });
 }
 
 /**
- * Register a new user.
+ * Get a To Do item by it's ID.
  *
- * @param user
- * @returns {Promise<Response | never>}
+ * @param todoId The To Do item ID.
+ * @returns {*}
  */
 
-function register (user) {
-  const requestOptions = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(user)
-  }
+function getTodo(todoId) {
 
-  return fetch(`${frontendConfig.apiUrl}/users/register`, requestOptions).then(handleResponse)
-}
-
-/**
- * Get all users.
- *
- * @returns {Promise<Response | never>}
- */
-
-function getAll () {
   const requestOptions = {
     method: 'GET',
-    headers: authHeader()
-  }
+  };
 
-  return fetch(`${frontendConfig.apiUrl}/users`, requestOptions).then(handleResponse)
+  const fetchUrl = `${frontendConfig.apiUrl}` + todoId;
+
+  return fetch(fetchUrl, requestOptions)
+    .then(handleJsonResponse)
+    .then(data => {
+      return data
+    })
 }
 
 /**
- * Get a user by it's ID.
+ * Get To Do items.
  *
- * @param id
- * @returns {Promise<Response | never>}
+ * @returns {*}
  */
 
-function getById (id) {
+function getTodos(state, limit, offset) {
+
   const requestOptions = {
     method: 'GET',
-    headers: authHeader()
-  }
+  };
 
-  return fetch(`${frontendConfig.apiUrl}/users/${id}`, requestOptions).then(handleResponse)
+  const fetchUrl = `${frontendConfig.apiUrl}` +
+    $.param({state: state, limit: limit, offset: offset});
+
+  return fetch(fetchUrl, requestOptions)
+    .then(handleJsonResponse)
+    .then(data => {
+      return data
+    })
 }
 
 /**
- * Update an existing user.
+ * Update an exsting To Do item.
  *
- * @param user
- * @returns {Promise<Response | never>}
+ * @param todoBase Object holding the To Do data.
+ * @returns {*}
  */
 
-function update (user) {
+function updateTodo(todoBase) {
+
   const requestOptions = {
     method: 'PUT',
-    headers: { ...authHeader(), 'Content-Type': 'application/json' },
-    body: JSON.stringify(user)
-  }
+    body: JSON.stringify(todoBase)
+  };
 
-  return fetch(`${frontendConfig.apiUrl}/users/${user.id}`, requestOptions).then(handleResponse)
-}
-
-/**
- * Delete an existing user.
- *
- * Method naming with underscore because delete is a reserved word in JS.
- *
- * @param id
- * @returns {Promise<Response | never>}
- * @private
- */
-
-function _delete (id) {
-  const requestOptions = {
-    method: 'DELETE',
-    headers: authHeader()
-  }
-
-  return fetch(`${frontendConfig.apiUrl}/users/${id}`, requestOptions).then(handleResponse)
+  return fetch(`${frontendConfig.apiUrl}`, requestOptions)
+    .then(response => {
+      return response.status
+    });
 }
 
 /**
@@ -143,19 +128,17 @@ function _delete (id) {
  * @returns {*}
  */
 
-function handleResponse (response) {
+function handleJsonResponse(response) {
   return response.text().then(text => {
-    const data = text && JSON.parse(text)
+    const data = text && JSON.parse(text);
 
     // Handle errors:
     if (!response.ok) {
       if (response.status === 401) {
-        // Auto login for API 401 responses:
-        logout()
         location.reload(true)
       }
 
-      const error = (data && data.message) || response.statusText
+      const error = (data && data.message) || response.statusText;
       return Promise.reject(error)
     }
 
