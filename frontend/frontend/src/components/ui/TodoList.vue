@@ -8,9 +8,19 @@
           <b-list-group-item>
             {{ todo.title }} | {{ customFormatter(todo) }}
             <label class="checkbox">
-              <input type="checkbox" :checked="todo.done"  @change="setDone(todo, $event)"/>
+              <input type="checkbox" :checked="todo.done" @change="setDone(todo, $event)"/>
               <span class="default"></span>
             </label>
+
+            <div class="fa-pull-right vertical-center">
+              <button class="btn btn-xs pull-right">
+                <font-awesome-icon icon="pen"/>
+              </button>
+              <button class="btn btn-xs pull-right">
+                <font-awesome-icon icon="trash"/>
+              </button>
+            </div>
+
           </b-list-group-item>
         </div>
 
@@ -69,7 +79,7 @@
 
       customFormatter(date) {
 
-        return util.formatDate(date);
+        return util.formatDateShort(date);
       }
     }
   }
@@ -77,6 +87,12 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
+  .vertical-center {
+    margin-top: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 
   @keyframes check {
     0% {
