@@ -31,6 +31,7 @@
 
 <script>
   import {todoService} from '../../services'
+  import {eventBus} from '../../main';
 
   export default {
     name:"TodoList",
@@ -94,6 +95,17 @@
         });*/
       }
     },
+
+    created() {
+      // Using the event bus
+      eventBus.$on('todo', (data) => {
+
+        console.log(data);
+
+        //this.todos.push(data);
+      });
+    },
+
     /*mixins: [
       confirm
     ],*/

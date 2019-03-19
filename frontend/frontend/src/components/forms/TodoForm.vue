@@ -1,20 +1,20 @@
 <template>
   <div>
     <b-form @submit.prevent="createTodo">
-      <b-form-group id="todo-inputs" v-model="form.todo">
+      <b-form-group id="todo-inputs" v-model="todo">
 
         <!-- Title -->
         <b-form-input id="todo-title" type="text"
-                      v-model="form.title" required
+                      v-model="todo.title" required
                       placeholder="Enter title"/>
 
         <!-- Description -->
         <b-form-textarea id="todo-description"
-                         v-model="form.description"
+                         v-model="todo.description"
                          placeholder="Enter description"/>
 
         <!-- Date -->
-        <todo-date-picker id="todo-date" v-model="form.date" required></todo-date-picker>
+        <todo-date-picker :bootstrap-styling="true" v-model="todo.date"></todo-date-picker>
 
       </b-form-group>
 
@@ -26,23 +26,39 @@
 </template>
 
 <script>
-  import TodoDatePicker from "../ui/TodoDatePicker";
+  import TodoDatePicker from 'vuejs-datepicker';
+  import {eventBus} from '../../main';
+  import {todoService} from "../../services/todo-service";
 
   export default {
     name: 'TodoForm',
-    components: {TodoDatePicker},
+    components: { todoDatePicker: TodoDatePicker },
     data() {
       return {
-        form: {
+        todo: {
           title: '',
           description: '',
-          date: null,
+          date: new Date(),
         }
       }
     },
     methods: {
       createTodo() {
-        console.dir(this.form.title);
+
+        console.dir(this.todo.date);
+
+        const newTodo = {
+          title: this.todo.title,
+          description: this.todo.description,
+          date: this.todo.date,
+          done: false
+        };
+
+        /* Create and get new to do item from API */
+        todoService.createTodo(newTodo)
+          .then(function (data) {
+            eventBus.$emit('todo', data);
+          });
       }
     }
   }

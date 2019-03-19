@@ -32,10 +32,7 @@ function createTodo(todoBase) {
   };
 
   return fetch(`${frontendConfig.apiUrl}`, requestProperties)
-    .then(handleJsonResponse)
-    .then(data => {
-      return data
-    })
+    .then(handleJsonResponse);
 }
 
 /**

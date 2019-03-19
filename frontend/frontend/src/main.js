@@ -8,7 +8,11 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 Vue.use(BootstrapVue);
+
 Vue.config.productionTip = false;
+
+/* Event bus */
+export const eventBus = new Vue();
 
 /* eslint-disable no-new */
 new Vue({
