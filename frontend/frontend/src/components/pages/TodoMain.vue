@@ -4,14 +4,19 @@
     <!-- Header -->
     <todo-header></todo-header>
 
-    <!-- Add form -->
-    <div class="todo-center-with-border">
+    <!-- Form -->
+    <div class="center-element">
       <todo-form></todo-form>
     </div>
 
-    <div class="todo-center-with-border">
+    <hr/>
+
+    <!-- List -->
+    <div class="center-element">
       <todo-list></todo-list>
     </div>
+
+    <hr/>
 
     <!-- Footer -->
     <todo-footer></todo-footer>
@@ -33,20 +38,23 @@
 
 <style>
 
+  hr {
+    max-width: 600px;
+  }
+
   /* Group and center elements with border */
-  .todo-center-with-border {
+  .center-element {
     min-width: 500px;
     max-width: 600px;
     min-height: 100px;
     padding: 30px 38px 30px;
     margin: 20px auto 0;
     background-color: #ffffff;
-    border: 3px dotted rgba(0, 0, 0, 0.1);
   }
 
   /* Responsive stuff */
   @media (max-width: 700px) {
-    .todo-center-with-border {
+    .center-element {
       margin-top: 25px;
       margin-bottom: 0;
     }

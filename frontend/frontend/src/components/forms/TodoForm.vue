@@ -14,7 +14,8 @@
                          placeholder="Enter description"/>
 
         <!-- Date -->
-        <todo-date-picker :bootstrap-styling="true" v-model="todo.date"></todo-date-picker>
+        <todo-date-picker :bootstrap-styling="true" :format="customFormatter"
+                          v-model="todo.date"></todo-date-picker>
 
       </b-form-group>
 
@@ -27,12 +28,13 @@
 
 <script>
   import TodoDatePicker from 'vuejs-datepicker';
-  import {eventBus} from '../../main';
   import {todoService} from "../../services/todo-service";
+  import * as moment from 'moment';
+  import {eventBus} from '../../main';
 
   export default {
     name: 'TodoForm',
-    components: { todoDatePicker: TodoDatePicker },
+    components: {todoDatePicker: TodoDatePicker},
     data() {
       return {
         todo: {
@@ -45,20 +47,25 @@
     methods: {
       createTodo() {
 
-        console.dir(this.todo.date);
-
         const newTodo = {
           title: this.todo.title,
           description: this.todo.description,
-          date: this.todo.date,
+          dueDate: this.todo.date.toISOString(),
           done: false
         };
 
         /* Create and get new to do item from API */
         todoService.createTodo(newTodo)
           .then(function (data) {
-            eventBus.$emit('todo', data);
+
+            eventBus.$emit("todoAdded", data);
+
+            //this.$root.$emit('todoListAdd', data);
           });
+      },
+
+      customFormatter(date) {
+        return moment(date).format('MMMM Do YYYY, h:mm:ss a');
       }
     }
   }

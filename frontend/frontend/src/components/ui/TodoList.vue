@@ -1,32 +1,12 @@
 <template>
-    <div class="container-fluid">
-      <div class="wrapper-main">
+  <div class="container-fluid">
+    <div class="wrapper-main">
 
-        <p v-if="loading"></p>
-        <div v-else>
-          <ul class="list-inline">
-            <li class="list-inline-item" v-for="(todo, index) in todosSortedByDate" v-bind:key="todo.id">
-              <button type="button" class="btn btn-outline-danger" v-on:click.prevent="removeTodo(todo, index)">
-                <span class="btn-text">{{ todo.id }}</span>
-                <span class="btn-icon" aria-hidden="true">&times;</span>
-              </button>
-            </li>
-          </ul>
-          <div class="form-group">
-            <div class="input-group">
-              <input type="text" class="form-control" autocomplete="name" required ref="name" v-bind:disabled="busy"
-                     v-model="name" v-on:keydown.enter.prevent="addTodo"/>
-              <div class="input-group-btn">
-                <button type="button" class="btn btn-primary" v-on:click.prevent="addTodo" v-bind:disabled="busy">
-                  <span class="btn-text" v-html="submitText"/>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+      <!--<b-list-group v-for="todo in todos"></b-list-group>-->
+      {{ todos }}
 
-      </div>
     </div>
+  </div>
 </template>
 
 <script>
@@ -34,8 +14,35 @@
   import {eventBus} from '../../main';
 
   export default {
-    name:"TodoList",
-    computed: {
+    name: "TodoList",
+
+    data() {
+      return {
+        todos: []
+      }
+    },
+
+    created() {
+      this.loadTodos();
+    },
+
+    mounted() {
+
+      eventBus.$on("todoAdded", function (data) {
+        this.todos.push(data);
+      }.bind(this));
+    },
+
+    methods: {
+      loadTodos() {
+
+        todoService.getTodos("all", 5, 0).then(data => {
+          this.todos = data;
+        });
+      }
+
+
+      /*computed: {
 
       submitText() {
 
@@ -92,7 +99,7 @@
             .then(() => {
               this.todos.splice(index, 1);
             });
-        });*/
+        });
       }
     },
 
@@ -106,9 +113,9 @@
       });
     },
 
-    /*mixins: [
+    mixins: [
       confirm
-    ],*/
+    ],
     mounted() {
       this.loadTodos();
     },
@@ -117,13 +124,13 @@
         required: true,
         type: String
       }
+    }*/
     }
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
 
 
 </style>
