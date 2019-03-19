@@ -75,10 +75,7 @@ function getTodo(todoId) {
   const fetchUrl = `${frontendConfig.apiUrl}` + todoId;
 
   return fetch(fetchUrl, requestOptions)
-    .then(handleJsonResponse)
-    .then(data => {
-      return data;
-    })
+    .then(handleJsonResponse);
 }
 
 /**
@@ -98,31 +95,29 @@ function getTodos(state, limit, offset) {
     $.param({state: state, limit: limit, offset: offset});
 
   return fetch(fetchUrl, requestOptions)
-    .then(handleJsonResponse)
-    .then(data => {
-      return data;
-    })
+    .then(handleJsonResponse);
 }
 
 /**
  * Update an exsting To Do item.
  *
- * @param todoBase Object holding the To Do data.
+ * @param todoFull Object holding the To Do data.
  * @returns {*}
  */
 
-function updateTodo(todoBase) {
+function updateTodo(todoFull) {
 
   const requestOptions = {
     method: 'PUT',
-    body: JSON.stringify(todoBase),
+    headers:{ 'Content-Type': 'application/json' },
+    body: JSON.stringify(todoFull),
     mode: 'cors'
   };
 
-  return fetch(`${frontendConfig.apiUrl}`, requestOptions)
-    .then(response => {
-      return response.status;
-    });
+  const fetchUrl = `${frontendConfig.apiUrl}` + todoFull.id;
+
+  return fetch(fetchUrl, requestOptions)
+    .then(handleJsonResponse);
 }
 
 /**
@@ -135,8 +130,8 @@ function updateTodo(todoBase) {
 function handleJsonResponse(response) {
 
   // This could happen:
-  if (response.status === 204) {
-    return Promise.resolve();
+  if (response.status === 204 || response.text === "") {
+    return Promise.reject();
   }
 
   // Finally process JSON response:

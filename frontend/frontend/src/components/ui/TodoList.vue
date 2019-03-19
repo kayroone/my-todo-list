@@ -6,9 +6,9 @@
 
         <div v-if="todo.id != null">
           <b-list-group-item>
-            {{ todo.title }} | {{ customFormatter(todo.dueDate) }}
+            {{ todo.title }} | {{ customFormatter(todo) }}
             <label class="checkbox">
-              <input type="checkbox" :checked="todo.done"/>
+              <input type="checkbox" :checked="todo.done"  @change="setDone(todo, $event)"/>
               <span class="default"></span>
             </label>
           </b-list-group-item>
@@ -44,21 +44,31 @@
     },
 
     beforeDestroy() {
+
       eventBus.$off("todoAdded", this.onTodoListUpdate)
     },
 
     methods: {
       loadTodos() {
+
         todoService.getTodos("all", 5, 0).then(data => {
           this.todos = data.slice(0);
         });
       },
 
       onTodoListUpdate(newTodo) {
+
         this.todos.unshift(newTodo);
       },
 
+      setDone(todo, event) {
+
+        todo.done = event.target.checked;
+        todoService.updateTodo(todo);
+      },
+
       customFormatter(date) {
+
         return util.formatDate(date);
       }
     }
