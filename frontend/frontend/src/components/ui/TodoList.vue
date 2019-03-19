@@ -4,18 +4,15 @@
 
       <b-list-group v-for="todo in todos" :key="todo.id">
 
-        <b-list-group-item href="#" class="clearfix">
-
-          <span class="label label-default">{{ todo.title }}</span>
-          {{ todo.dueDate }} - {{ todo.done }}
-          <span class="pull-right button-group">
-                <a href="#" class="btn btn-primary"><span class="glyphicon glyphicon-edit">
-                </span>Edit</a>
-                <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove">
-                </span>Delete</button>
-            </span>
-
-        </b-list-group-item>
+        <div v-if="todo.id != null">
+          <b-list-group-item>
+            {{ todo.title }} | {{ customFormatter(todo.dueDate) }}
+            <label class="checkbox">
+              <input type="checkbox" :checked="todo.done"/>
+              <span class="default"></span>
+            </label>
+          </b-list-group-item>
+        </div>
 
       </b-list-group>
 
@@ -26,6 +23,7 @@
 <script>
   import {todoService} from '../../services'
   import {eventBus} from '../../main';
+  import {util} from '../../util/helpers';
 
   export default {
     name: "TodoList",
@@ -37,108 +35,32 @@
     },
 
     created() {
+
       this.loadTodos();
-    },
 
-    mounted() {
-
-      eventBus.$on("todoAdded", function (data) {
-        this.todos.unshift(data);
-      }.bind(this));
-    },
-
-    methods: {
-      loadTodos() {
-
-        todoService.getTodos("all", 5, 0).then(data => {
-          this.todos = data;
-        });
-      }
-
-
-      /*computed: {
-
-      submitText() {
-
-        return this.busy ? 'Submitting&hellip;' : 'Add todo';
-      },
-
-      todosSortedByDate() {
-
-        return this.todos.sort((a, b) => {
-          return a.id.localeCompare(b.id);
-        });
-      }
-    },
-
-    data() {
-      return {
-        busy: false,
-        loading: true,
-        name: '',
-        todos: []
-      };
-    },
-
-    methods: {
-
-      addTodo() {
-        this.busy = true;
-
-        todoService.createTodo().then(() => {
-
-          this.busy = false;
-          this.name = '';
-          this.$refs.name.focus();
-        });
-      },
-
-      loadTodos() {
-
-        todoService.getTodos("all", 5, 0).then(data => {
-
-          this.todos = data;
-          this.loading = false;
-        });
-      },
-
-      removeTodo(todo, index) {
-
-        const message = `Are you sure you wish to remove ${todo.id} from this list?`;
-        console.log(message);
-
-        /*this.confirm(message, () => {
-
-          todoService.deleteTodo(todo.id)
-            .then(() => {
-              this.todos.splice(index, 1);
-            });
-        });
-      }
-    },
-
-    created() {
-      // Using the event bus
-      eventBus.$on('todo', (data) => {
-
-        console.log(data);
-
-        //this.todos.push(data);
+      eventBus.$on("todoAdded", newTodo => {
+        this.onTodoListUpdate(newTodo);
       });
     },
 
-    mixins: [
-      confirm
-    ],
-    mounted() {
-      this.loadTodos();
+    beforeDestroy() {
+      eventBus.$off("todoAdded", this.onTodoListUpdate)
     },
-    props: {
-      action: {
-        required: true,
-        type: String
+
+    methods: {
+      loadTodos() {
+        todoService.getTodos("all", 5, 0).then(data => {
+          this.todos = data.slice(0);
+        });
+      },
+
+      onTodoListUpdate(newTodo) {
+        this.todos.unshift(newTodo);
+      },
+
+      customFormatter(date) {
+        return util.formatDate(date);
       }
-    }*/
     }
   }
 </script>
@@ -146,5 +68,82 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
+  @keyframes check {
+    0% {
+      height: 0;
+      width: 0;
+    }
+    25% {
+      height: 0;
+      width: 10px;
+    }
+    50% {
+      height: 20px;
+      width: 10px;
+    }
+  }
+
+  .list-group-item {
+    margin-top: 7px;
+  }
+
+  .checkbox {
+    background-color: #fff;
+    display: inline-block;
+    height: 28px;
+    margin: 0 .25em;
+    width: 28px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    float: left
+  }
+
+  .checkbox span {
+    display: block;
+    height: 28px;
+    position: relative;
+    width: 28px;
+    padding: 0
+  }
+
+  .checkbox span:after {
+    -moz-transform: scaleX(-1) rotate(135deg);
+    -ms-transform: scaleX(-1) rotate(135deg);
+    -webkit-transform: scaleX(-1) rotate(135deg);
+    transform: scaleX(-1) rotate(135deg);
+    -moz-transform-origin: left top;
+    -ms-transform-origin: left top;
+    -webkit-transform-origin: left top;
+    transform-origin: left top;
+    border-right: 4px solid #fff;
+    border-top: 4px solid #fff;
+    content: '';
+    display: block;
+    height: 20px;
+    left: 3px;
+    position: absolute;
+    top: 15px;
+    width: 10px
+  }
+
+  .checkbox span:hover:after {
+    border-color: #999
+  }
+
+  .checkbox input {
+    display: none
+  }
+
+  .checkbox input:checked + span:after {
+    -webkit-animation: check .8s;
+    -moz-animation: check .8s;
+    -o-animation: check .8s;
+    animation: check .8s;
+    border-color: #555
+  }
+
+  .checkbox input:checked + .default:after {
+    border-color: #444
+  }
 
 </style>

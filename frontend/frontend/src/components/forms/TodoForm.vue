@@ -29,8 +29,8 @@
 <script>
   import TodoDatePicker from 'vuejs-datepicker';
   import {todoService} from "../../services/todo-service";
-  import * as moment from 'moment';
   import {eventBus} from '../../main';
+  import {util} from '../../util/helpers';
 
   export default {
     name: 'TodoForm',
@@ -57,15 +57,17 @@
         /* Create and get new to do item from API */
         todoService.createTodo(newTodo)
           .then(function (data) {
-
             eventBus.$emit("todoAdded", data);
-
-            //this.$root.$emit('todoListAdd', data);
           });
+
+        /* Clear */
+        this.todo.title = "";
+        this.todo.description = "";
+        this.todo.date = new Date();
       },
 
       customFormatter(date) {
-        return moment(date).format('MMMM Do YYYY, h:mm:ss a');
+        return util.formatDate(date);
       }
     }
   }

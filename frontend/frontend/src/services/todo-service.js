@@ -1,5 +1,6 @@
 import {frontendConfig} from '../config/frontend-config.js'
 import $ from 'jquery'
+import moment from "moment";
 
 /**
  * Export all To Do service CRUD methods via todoService object.
@@ -46,13 +47,14 @@ function deleteTodo(todoId) {
 
   const requestProperties = {
     method: 'DELETE',
+    mode: 'cors'
   };
 
   const fetchUrl = `${frontendConfig.apiUrl}` + todoId;
 
   return fetch(fetchUrl, requestProperties)
     .then(response => {
-      return response.status
+      return response.status;
     });
 }
 
@@ -67,6 +69,7 @@ function getTodo(todoId) {
 
   const requestOptions = {
     method: 'GET',
+    mode: 'cors'
   };
 
   const fetchUrl = `${frontendConfig.apiUrl}` + todoId;
@@ -74,7 +77,7 @@ function getTodo(todoId) {
   return fetch(fetchUrl, requestOptions)
     .then(handleJsonResponse)
     .then(data => {
-      return data
+      return data;
     })
 }
 
@@ -97,7 +100,7 @@ function getTodos(state, limit, offset) {
   return fetch(fetchUrl, requestOptions)
     .then(handleJsonResponse)
     .then(data => {
-      return data
+      return data;
     })
 }
 
@@ -112,12 +115,13 @@ function updateTodo(todoBase) {
 
   const requestOptions = {
     method: 'PUT',
-    body: JSON.stringify(todoBase)
+    body: JSON.stringify(todoBase),
+    mode: 'cors'
   };
 
   return fetch(`${frontendConfig.apiUrl}`, requestOptions)
     .then(response => {
-      return response.status
+      return response.status;
     });
 }
 
@@ -129,15 +133,30 @@ function updateTodo(todoBase) {
  */
 
 function handleJsonResponse(response) {
+
+  // This could happen:
+  if (response.status === 204) {
+    return Promise.resolve();
+  }
+
+  // Finally process JSON response:
   return response.text().then(text => {
+
     const data = text && JSON.parse(text);
+
+    // Convert to frontend date:
+    if (data.hasOwnProperty("dueDate")) {
+      const date = data.dueDate;
+      delete data.dueDate;
+      data.dueDate = moment(date).format('MMMM Do YYYY, h:mm:ss A');
+    }
 
     // Handle errors:
     if (!response.ok) {
       const error = (data && data.message) || response.statusText;
-      return Promise.reject(error)
+      return Promise.reject(error);
     }
 
-    return data
+    return data;
   })
 }
