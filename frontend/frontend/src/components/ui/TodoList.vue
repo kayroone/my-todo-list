@@ -2,8 +2,22 @@
   <div class="container-fluid">
     <div class="wrapper-main">
 
-      <!--<b-list-group v-for="todo in todos"></b-list-group>-->
-      {{ todos }}
+      <b-list-group v-for="todo in todos" :key="todo.id">
+
+        <b-list-group-item href="#" class="clearfix">
+
+          <span class="label label-default">{{ todo.title }}</span>
+          {{ todo.dueDate }} - {{ todo.done }}
+          <span class="pull-right button-group">
+                <a href="#" class="btn btn-primary"><span class="glyphicon glyphicon-edit">
+                </span>Edit</a>
+                <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove">
+                </span>Delete</button>
+            </span>
+
+        </b-list-group-item>
+
+      </b-list-group>
 
     </div>
   </div>
@@ -29,7 +43,7 @@
     mounted() {
 
       eventBus.$on("todoAdded", function (data) {
-        this.todos.push(data);
+        this.todos.unshift(data);
       }.bind(this));
     },
 

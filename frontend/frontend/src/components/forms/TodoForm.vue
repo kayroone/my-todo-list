@@ -20,7 +20,7 @@
       </b-form-group>
 
       <!-- Submit and add -->
-      <b-button id="todo-add" type="submit" variant="success">Add</b-button>
+      <b-button id="todo-add" type="submit" variant="secondary">Add</b-button>
 
     </b-form>
   </div>
@@ -74,7 +74,8 @@
 <style scoped>
 
   #todo-add {
-    width: 300px;
+    width: 100%;
+    min-width: 500px;
   }
 
   #todo-inputs * {
