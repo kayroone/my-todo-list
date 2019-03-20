@@ -55,11 +55,7 @@
     created() {
 
       eventBus.$on("modifyModalOpened", todo => {
-
-        this.todo = todo;
-        this.modified.dueDate = util.toDefaultDate(todo.dueDate);
-
-        this.showModal();
+        this.showModal(todo);
       });
 
       eventBus.$on("modifyModalClosed", () => {
@@ -69,10 +65,14 @@
     },
     beforeDestroy() {
 
-      eventBus.$off("modifyModalOpened");
+      eventBus.$off("modifyModalOpened", this.showModal);
+      eventBus.$off("modifyModalClosed", this.clearModifyModal);
     },
     methods: {
-      showModal() {
+      showModal(todo) {
+
+        this.todo = todo;
+        this.modified.dueDate = util.toDefaultDate(todo.dueDate);
 
         this.$refs.todoModifyModalRef.show()
       },

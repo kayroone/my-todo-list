@@ -1,12 +1,25 @@
 <template>
-  <div class="space-top text-center">
-    <b-button class="text-dark" variant="link">Imprint</b-button>
+  <div>
+    <div class="space-top text-center">
+      <b-button class="text-dark" variant="link" @click="openImprintModal">Imprint</b-button>
+    </div>
+    <modal ref="modal"></modal>
   </div>
 </template>
 
 <script>
+  import {eventBus} from '../../main';
+  import modal from '../dialog/TodoImprintModal';
+
   export default {
-    name: "TodoFooter"
+    name: "TodoFooter",
+    components: {modal},
+    methods: {
+      openImprintModal() {
+
+        eventBus.$emit("imprintModalOpened");
+      }
+    }
   }
 </script>
 
