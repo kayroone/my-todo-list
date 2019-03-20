@@ -1,22 +1,22 @@
 <template>
   <div>
-    <b-modal ref="todoModifyModalRef" hide-footer :title="'Modify ' + todo.title">
+    <b-modal ref="todoModifyModalRef" hide-footer :title="'Modify ' + modified.title">
       <div class="d-block text-center">
         <b-form-group id="todo-inputs" v-model="modified">
 
           <!-- Title -->
           <b-form-input id="todo-title" type="text"
                         v-model="modified.title" required
-                        :placeholder="todo.title"/>
+                        :placeholder="modified.title"/>
 
           <!-- Description -->
           <b-form-textarea id="todo-description"
                            v-model="modified.description"
-                           :value="todo.description"/>
+                           :value="modified.description"/>
 
           <!-- Date -->
           <todo-date-picker :bootstrap-styling="true" :format="customFormatter"
-                            :value="todo.dueDate" v-model="modified.dueDate">
+                            :value="modified.dueDate" v-model="modified.dueDate">
           </todo-date-picker>
 
         </b-form-group>
@@ -43,12 +43,21 @@
     components: {TodoDatePicker},
     data() {
       return {
-        modified: {},
+        modified: {
+          title: '',
+          description: '',
+          dueDate: new Date(),
+          done: false,
+          id: null,
+          idx: null
+        },
         todo: {
           title: '',
           description: '',
           dueDate: new Date(),
-          done: false
+          done: false,
+          id: null,
+          idx: null
         }
       }
     },
@@ -71,10 +80,11 @@
     methods: {
       showModal(todo) {
 
+        this.modified = {};
         this.todo = todo;
 
         this.modified.title = todo.title;
-        this.modified.description = todo.description;
+        this.modified.description = todo.description ? todo.description : "";
         this.modified.done = todo.done;
         this.modified.id = todo.id;
         this.modified.idx = todo.idx;
@@ -86,7 +96,7 @@
 
         this.todo = {};
         this.modified = {};
-        
+
         this.$refs.todoModifyModalRef.hide()
       },
       saveModifyModal(todo, modified) {

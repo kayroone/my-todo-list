@@ -9,12 +9,6 @@
       <todo-form></todo-form>
     </div>
 
-    <!--<hr/>
-
-    <div class="center-element">
-      <todo-actions></todo-actions>
-    </div>-->
-
     <hr/>
 
     <!-- List -->

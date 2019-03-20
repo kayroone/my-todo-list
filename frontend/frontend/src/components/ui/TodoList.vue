@@ -10,7 +10,7 @@
           <b-list-group-item>
 
             <!-- List entry -->
-            {{ todo.title }} | {{ todo.dueDate }}
+            {{ todo.title }} | {{ todo.dueDate }} | {{ todo.id }}
             <label class="checkbox">
               <input type="checkbox" :checked="todo.done" @change="updateTodo(todo, $event)"/>
               <span class="default"></span>
@@ -93,10 +93,6 @@
 
         todo.idx = idx;
         eventBus.$emit("modifyModalOpened", todo);
-      },
-      clearModifyModal() {
-
-        eventBus.$emit("modifyModalClosed");
       },
       onTodoListAdd(newTodo) {
 
