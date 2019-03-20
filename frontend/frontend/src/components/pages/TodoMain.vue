@@ -34,7 +34,7 @@
   import TodoHeader from "../layout/TodoHeader";
   import TodoList from "../ui/TodoList";
   import TodoFooter from "../layout/TodoFooter";
-  import TodoForm from "../forms/TodoForm";
+  import TodoForm from "../forms/TodoAddForm";
 
   export default {
     name: "TodoMain",

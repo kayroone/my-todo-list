@@ -6,6 +6,8 @@
 
         <div v-if="todo.id != null">
           <b-list-group-item>
+
+            <!-- List entry -->
             {{ todo.title }} | {{ todo.dueDate }}
             <label class="checkbox">
               <input type="checkbox" :checked="todo.done" @change="updateTodo(todo, $event)"/>
@@ -13,7 +15,7 @@
             </label>
 
             <div class="fa-pull-right vertical-center">
-              <button class="btn btn-xs pull-right" @click="modifyTodo(todo)">
+              <button class="btn btn-xs pull-right" @click="openModifyModal(todo, idx)">
                 <font-awesome-icon icon="pen"/>
               </button>
               <button class="btn btn-xs pull-right" @click="deleteTodo(todo, idx)">
@@ -26,7 +28,7 @@
 
       </b-list-group>
 
-      <todo-modify-modal v-show="isModalVisible" @close="closeModal"></todo-modify-modal>
+      <modal ref="modal"></modal>
 
     </div>
   </div>
@@ -35,14 +37,15 @@
 <script>
   import {todoService} from '../../services'
   import {eventBus} from '../../main';
-  import TodoModifyModal from "../dialog/TodoModify";
+  import {util} from '../../util/date-formatter';
+  import modal from "../dialog/TodoModifyModal";
 
   export default {
     name: "TodoList",
-    components: {TodoModifyModal},
+    components: {modal},
     data() {
       return {
-        isModalVisible: false,
+        modalShow: false,
         todos: []
       }
     },
@@ -51,12 +54,17 @@
       this.loadTodos();
 
       eventBus.$on("todoAdded", newTodo => {
-        this.onTodoListUpdate(newTodo);
+        this.onTodoListAdd(newTodo);
+      });
+
+      eventBus.$on("todoModified", modifiedTodo => {
+        this.onTodoListModify(modifiedTodo);
       });
     },
     beforeDestroy() {
 
-      eventBus.$off("todoAdded", this.onTodoListUpdate)
+      eventBus.$off("todoAdded", this.onTodoListAdd);
+      eventBus.$off("todoModified", this.onTodoListModify);
     },
     methods: {
       loadTodos() {
@@ -71,30 +79,32 @@
 
         todo.done = event.target.checked;
         todoService.updateTodo(todo);
+        this.todo = util.formatDateInObjectFrontend(todo);
       },
       deleteTodo(todo, idx) {
 
         todoService.deleteTodo(todo.id);
         this.todos.splice(idx, 1);
       },
-      modifyTodo(todo) {
+      openModifyModal(todo, idx) {
 
-        this.showModal();
-        eventBus.$emit("modifyTodoClicked", todo);
+        todo.idx = idx;
+        eventBus.$emit("modifyModalOpened", todo);
       },
-      showModal() {
+      clearModifyModal() {
 
-        this.isModalVisible = true;
+        eventBus.$emit("modifyModalClosed");
       },
-      closeModal() {
-
-        this.isModalVisible = false;
-      },
-      onTodoListUpdate(newTodo) {
+      onTodoListAdd(newTodo) {
 
         this.todos.unshift(newTodo);
+      },
+      onTodoListModify(modifiedTodo) {
+
+        modifiedTodo = util.formatDateInObjectFrontend(modifiedTodo);
+        this.$set(this.todos, modifiedTodo.idx, modifiedTodo);
       }
-    }
+    },
   }
 </script>
 
@@ -181,5 +191,9 @@
 
   .checkbox input:checked + .default:after {
     border-color: #444
+  }
+
+  #todo-inputs * {
+    margin-top: 10px;
   }
 </style>

@@ -15,7 +15,9 @@
 
         <!-- Date -->
         <todo-date-picker :bootstrap-styling="true" :format="customFormatter"
-                          v-model="todo.date"></todo-date-picker>
+                          :value="todo.dueDate"
+                          v-model="todo.dueDate">
+        </todo-date-picker>
 
       </b-form-group>
 
@@ -40,7 +42,8 @@
         todo: {
           title: '',
           description: '',
-          date: new Date(),
+          dueDate: new Date(),
+          done: false
         }
       }
     },
@@ -50,7 +53,7 @@
         const newTodo = {
           title: this.todo.title,
           description: this.todo.description,
-          dueDate: this.todo.date,
+          dueDate: this.todo.dueDate,
           done: false
         };
 
@@ -65,7 +68,7 @@
         /* Clear */
         this.todo.title = "";
         this.todo.description = "";
-        this.todo.date = new Date();
+        this.todo.dueDate = new Date();
       },
 
       customFormatter(date) {

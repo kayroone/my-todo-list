@@ -111,8 +111,6 @@ function updateTodo(todoFull) {
 
   todoFull = util.formatDateInObjectBackend(todoFull);
 
-  console.dir(todoFull);
-
   const requestOptions = {
     method: 'PUT',
     headers: {'Content-Type': 'application/json'},
