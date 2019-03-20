@@ -2,43 +2,7 @@
   <div class="container-fluid">
     <div class="wrapper-main">
 
-      <div class="todo-filter-config-toggle">
-        <v-button v-b-toggle.collapse1 class="btn btn-xs btn-outline-dark">
-          <font-awesome-icon icon="cogs"/>
-          Filter config
-        </v-button>
-      </div>
-      <div class="todo-filter-config-entries">
-        <b-collapse id="collapse1" class="mt-2">
-          <div class="form-inline">
-            <div class="form-group">
-              <b-card>
-
-                <b-form-input v-model="text1" type="text" placeholder="Enter item limit"/>
-                <b-form-checkbox
-                  id="checkbox1"
-                  name="checkbox1"
-                  v-model="status"
-                  value="accepted"
-                  unchecked-value="not_accepted"
-                  class="custom-checkbox"
-                >
-                  Filter by title
-                </b-form-checkbox>
-                <b-form-checkbox
-                  id="checkbox2"
-                  name="checkbox1"
-                  v-model="status"
-                  value="accepted"
-                  unchecked-value="not_accepted"
-                >
-                  Filter by date
-                </b-form-checkbox>
-              </b-card>
-            </div>
-          </div>
-        </b-collapse>
-      </div>
+      <todo-filter-config></todo-filter-config>
 
       <b-list-group v-for="(todo, idx) in todos" :key="todo.id">
 
@@ -77,10 +41,11 @@
   import {eventBus} from '../../main';
   import {util} from '../../util/date-formatter';
   import modal from "../dialog/TodoModifyModal";
+  import TodoFilterConfig from "../ui/TodoFilterConfig";
 
   export default {
     name: "TodoList",
-    components: {modal},
+    components: {modal, TodoFilterConfig},
     data() {
       return {
         modalShow: false,
@@ -234,15 +199,4 @@
   #todo-inputs * {
     margin-top: 10px;
   }
-
-  .todo-filter-config-toggle {
-    text-align: right;
-    margin-bottom: 10px;
-    margin-top: -20px;
-  }
-
-  .todo-filter-config-entries {
-    min-width: 530px;
-  }
-
 </style>
