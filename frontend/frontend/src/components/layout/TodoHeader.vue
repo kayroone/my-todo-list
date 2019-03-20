@@ -3,13 +3,12 @@
 </template>
 
 <script>
-    export default {
-        name: "TodoHeader"
-    }
+  export default {
+    name: "TodoHeader"
+  }
 </script>
 
 <style scoped>
-
   @font-face {
     font-family: 'blackjack';
     src: url('../../fonts/blackjack.ttf') format('truetype');

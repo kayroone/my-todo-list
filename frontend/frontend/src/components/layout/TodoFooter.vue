@@ -5,15 +5,13 @@
 </template>
 
 <script>
-    export default {
-        name: "TodoFooter"
-    }
+  export default {
+    name: "TodoFooter"
+  }
 </script>
 
 <style scoped>
-
   .space-top {
     margin-top: 10px;
   }
-
 </style>

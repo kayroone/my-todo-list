@@ -2,21 +2,21 @@
   <div class="container-fluid">
     <div class="wrapper-main">
 
-      <b-list-group v-for="todo in todos" :key="todo.id">
+      <b-list-group v-for="(todo, idx) in todos" :key="todo.id">
 
         <div v-if="todo.id != null">
           <b-list-group-item>
             {{ todo.title }} | {{ customFormatter(todo) }}
             <label class="checkbox">
-              <input type="checkbox" :checked="todo.done" @change="setDone(todo, $event)"/>
+              <input type="checkbox" :checked="todo.done" @change="updateTodo(todo, $event)"/>
               <span class="default"></span>
             </label>
 
             <div class="fa-pull-right vertical-center">
-              <button class="btn btn-xs pull-right">
+              <button class="btn btn-xs pull-right" @click="modifyTodo(todo)">
                 <font-awesome-icon icon="pen"/>
               </button>
-              <button class="btn btn-xs pull-right">
+              <button class="btn btn-xs pull-right" @click="deleteTodo(todo, idx)">
                 <font-awesome-icon icon="trash"/>
               </button>
             </div>
@@ -26,6 +26,8 @@
 
       </b-list-group>
 
+      <todo-modify-modal v-show="isModalVisible" @close="closeModal"></todo-modify-modal>
+
     </div>
   </div>
 </template>
@@ -34,16 +36,17 @@
   import {todoService} from '../../services'
   import {eventBus} from '../../main';
   import {util} from '../../util/helpers';
+  import TodoModifyModal from "../dialog/TodoModify";
 
   export default {
     name: "TodoList",
-
+    components: {TodoModifyModal},
     data() {
       return {
+        isModalVisible: false,
         todos: []
       }
     },
-
     created() {
 
       this.loadTodos();
@@ -52,31 +55,44 @@
         this.onTodoListUpdate(newTodo);
       });
     },
-
     beforeDestroy() {
 
       eventBus.$off("todoAdded", this.onTodoListUpdate)
     },
-
     methods: {
       loadTodos() {
 
         todoService.getTodos("all", 5, 0).then(data => {
-          this.todos = data.slice(0);
+          if (data) {
+            this.todos = data.slice(0);
+          }
         });
       },
-
-      onTodoListUpdate(newTodo) {
-
-        this.todos.unshift(newTodo);
-      },
-
-      setDone(todo, event) {
+      updateTodo(todo, event) {
 
         todo.done = event.target.checked;
         todoService.updateTodo(todo);
       },
+      deleteTodo(todo, idx) {
 
+        todoService.deleteTodo(todo.id);
+        this.todos.splice(idx, 1);
+      },
+      modifyTodo(todo) {
+
+        this.showModal();
+        eventBus.$emit("modifyTodoClicked", todo);
+      },
+      showModal() {
+        this.isModalVisible = true;
+      },
+      closeModal() {
+        this.isModalVisible = false;
+      },
+      onTodoListUpdate(newTodo) {
+
+        this.todos.unshift(newTodo);
+      },
       customFormatter(date) {
 
         return util.formatDateShort(date);
@@ -85,9 +101,7 @@
   }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
   .vertical-center {
     margin-top: 12px;
     top: 50%;
@@ -171,5 +185,4 @@
   .checkbox input:checked + .default:after {
     border-color: #444
   }
-
 </style>

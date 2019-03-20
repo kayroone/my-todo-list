@@ -131,7 +131,7 @@ function handleJsonResponse(response) {
 
   // This could happen:
   if (response.status === 204 || response.text === "") {
-    return Promise.reject();
+    return Promise.resolve();
   }
 
   // Finally process JSON response:

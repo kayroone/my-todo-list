@@ -8,9 +8,9 @@
 </template>
 
 <script>
-    export default {
-        name: "TodoActions"
-    }
+  export default {
+    name: "TodoActions"
+  }
 </script>
 
 <style scoped>

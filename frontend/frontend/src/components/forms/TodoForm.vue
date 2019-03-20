@@ -67,6 +67,7 @@
       },
 
       customFormatter(date) {
+
         return util.formatDate(date);
       }
     }
@@ -74,7 +75,6 @@
 </script>
 
 <style scoped>
-
   #todo-add {
     width: 100%;
     min-width: 500px;

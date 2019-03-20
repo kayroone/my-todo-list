@@ -9,6 +9,12 @@
       <todo-form></todo-form>
     </div>
 
+    <!--<hr/>
+
+    <div class="center-element">
+      <todo-actions></todo-actions>
+    </div>-->
+
     <hr/>
 
     <!-- List -->
@@ -37,7 +43,6 @@
 </script>
 
 <style>
-
   hr {
     max-width: 600px;
   }
@@ -59,5 +64,4 @@
       margin-bottom: 0;
     }
   }
-
 </style>
