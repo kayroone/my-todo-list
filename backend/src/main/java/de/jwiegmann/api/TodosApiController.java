@@ -3,7 +3,9 @@ package de.jwiegmann.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.jwiegmann.model.TodoBase;
 import de.jwiegmann.model.TodoFull;
+import de.jwiegmann.model.TodoList;
 import de.jwiegmann.service.TodosService;
+import de.jwiegmann.util.TodoUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,16 @@ public class TodosApiController implements TodosApi {
     private final ObjectMapper objectMapper;
     private final HttpServletRequest request;
     private final TodosService todosService;
+
+    @Override
+    public Optional<ObjectMapper> getObjectMapper() {
+        return Optional.ofNullable(objectMapper);
+    }
+
+    @Override
+    public Optional<HttpServletRequest> getRequest() {
+        return Optional.ofNullable(request);
+    }
 
     /**
      * Create a new To Do item.
@@ -118,26 +130,26 @@ public class TodosApiController implements TodosApi {
      * To Do items, HTTP status 204 if there are no To Do items, or HTTP status 400 for invalid query params.
      */
     @Override
-    public ResponseEntity getTodos(@RequestParam(required = false, defaultValue = "unfinished") String state,
+    public ResponseEntity<List<TodoList>> getTodos(@RequestParam(required = false, defaultValue = "unfinished") String state,
         @RequestParam(required = false, defaultValue = "5") Integer limit,
         @RequestParam(required = false, defaultValue = "0") Integer offset)
     {
 
-        Page<TodoFull> foundTodos = this.todosService.getTodos(state, limit, offset);
+        Page<TodoFull> foundTodosPage = this.todosService.getTodos(state, limit, offset);
 
         // No items found:
-        if (!foundTodos.hasContent()) {
+        if (!foundTodosPage.hasContent()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
         // More items found than specified:
-        if (foundTodos.getTotalPages() > 1) {
-            return new ResponseEntity<List<TodoFull>>(foundTodos.getContent(), HttpStatus.PARTIAL_CONTENT);
+        if (foundTodosPage.getTotalPages() > 1) {
+            return new ResponseEntity<List<TodoList>>(TodoUtil.mapFullToList(foundTodosPage), HttpStatus.PARTIAL_CONTENT);
         }
 
         // Items found within specified range:
-        else if (foundTodos.getTotalPages() == 1) {
-            return new ResponseEntity<List<TodoFull>>(foundTodos.getContent(), HttpStatus.OK);
+        else if (foundTodosPage.getTotalPages() == 1) {
+            return new ResponseEntity<List<TodoList>>(TodoUtil.mapFullToList(foundTodosPage), HttpStatus.OK);
         }
 
         // Ententies can not be processed:

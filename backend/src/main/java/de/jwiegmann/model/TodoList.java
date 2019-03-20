@@ -37,6 +37,19 @@ public class TodoList {
     }
 
     /**
+     * Copy constructor for TodoFull.
+     *
+     * @param todoFull
+     */
+
+    public TodoList(TodoFull todoFull) {
+        this.setId(todoFull.getId());
+        this.setTitle(todoFull.getTitle());
+        this.setDueDate(todoFull.getDueDate());
+        this.setDone(todoFull.isDone());
+    }
+
+    /**
      * Get id
      *
      * @return id
