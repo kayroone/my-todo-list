@@ -2,6 +2,29 @@
   <div class="container-fluid">
     <div class="wrapper-main">
 
+      <!--<div>
+        <input class="btn btn-xs btn-outline-dark" @click="openModifyModal(todo, idx)">
+          <font-awesome-icon icon="calendar"/>
+          Sort by date
+        </button>
+        <button class="btn btn-xs btn-outline-dark" @click="deleteTodo(todo, idx)">
+          <font-awesome-icon icon="file-word"/>
+          Sort by title
+        </button>
+      </div>-->
+
+      <div class="todo-filter-config">
+        <v-button v-b-toggle.collapse1 class="btn btn-xs btn-outline-dark">
+          <font-awesome-icon icon="cogs"/>
+          Filter config
+        </v-button>
+      </div>
+      <div>
+        <b-collapse id="collapse1" class="mt-2">
+          Hi!
+        </b-collapse>
+      </div>
+
       <b-list-group v-for="(todo, idx) in todos" :key="todo.id">
 
         <div v-if="todo.id != null">
@@ -196,4 +219,11 @@
   #todo-inputs * {
     margin-top: 10px;
   }
+
+  .todo-filter-config {
+    text-align: right;
+    margin-bottom: 10px;
+    margin-top: -20px;
+  }
+
 </style>
