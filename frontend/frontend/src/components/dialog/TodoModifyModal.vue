@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-modal ref="todoModifyModalRef" hide-footer :title="'Modify ' + todo.title" @click.native.stop="clearModifyModal">
+    <b-modal ref="todoModifyModalRef" hide-footer :title="'Modify ' + todo.title">
       <div class="d-block text-center">
         <b-form-group id="todo-inputs" v-model="modified">
 
@@ -72,6 +72,12 @@
       showModal(todo) {
 
         this.todo = todo;
+
+        this.modified.title = todo.title;
+        this.modified.description = todo.description;
+        this.modified.done = todo.done;
+        this.modified.id = todo.id;
+        this.modified.idx = todo.idx;
         this.modified.dueDate = util.toDefaultDate(todo.dueDate);
 
         this.$refs.todoModifyModalRef.show()
@@ -80,24 +86,12 @@
 
         this.todo = {};
         this.modified = {};
+        
         this.$refs.todoModifyModalRef.hide()
       },
       saveModifyModal(todo, modified) {
 
-        if (!modified.hasOwnProperty("title")) {
-          modified.title = todo.title;
-        }
-        if (!modified.hasOwnProperty("description")) {
-          modified.description = todo.description;
-        }
-        if (!modified.hasOwnProperty("dueDate")) {
-          modified.dueDate = todo.dueDate;
-        }
-
-        modified.done = todo.done;
-        modified.id = todo.id;
-        modified.idx = todo.idx;
-
+        this.modified.dueDate = util.toDefaultDate(modified.dueDate);
         eventBus.$emit("todoModified", modified);
 
         this.$refs.todoModifyModalRef.toggle('#toggleBtn')

@@ -20,10 +20,6 @@
         <p/>
       </div>
 
-      <b-button class="mt-3" variant="outline-dark"
-                block @click="closeModal">Close
-      </b-button>
-
     </b-modal>
   </div>
 </template>

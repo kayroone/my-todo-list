@@ -2,26 +2,41 @@
   <div class="container-fluid">
     <div class="wrapper-main">
 
-      <!--<div>
-        <input class="btn btn-xs btn-outline-dark" @click="openModifyModal(todo, idx)">
-          <font-awesome-icon icon="calendar"/>
-          Sort by date
-        </button>
-        <button class="btn btn-xs btn-outline-dark" @click="deleteTodo(todo, idx)">
-          <font-awesome-icon icon="file-word"/>
-          Sort by title
-        </button>
-      </div>-->
-
-      <div class="todo-filter-config">
+      <div class="todo-filter-config-toggle">
         <v-button v-b-toggle.collapse1 class="btn btn-xs btn-outline-dark">
           <font-awesome-icon icon="cogs"/>
           Filter config
         </v-button>
       </div>
-      <div>
+      <div class="todo-filter-config-entries">
         <b-collapse id="collapse1" class="mt-2">
-          Hi!
+          <div class="form-inline">
+            <div class="form-group">
+              <b-card>
+
+                <b-form-input v-model="text1" type="text" placeholder="Enter item limit"/>
+                <b-form-checkbox
+                  id="checkbox1"
+                  name="checkbox1"
+                  v-model="status"
+                  value="accepted"
+                  unchecked-value="not_accepted"
+                  class="custom-checkbox"
+                >
+                  Filter by title
+                </b-form-checkbox>
+                <b-form-checkbox
+                  id="checkbox2"
+                  name="checkbox1"
+                  v-model="status"
+                  value="accepted"
+                  unchecked-value="not_accepted"
+                >
+                  Filter by date
+                </b-form-checkbox>
+              </b-card>
+            </div>
+          </div>
         </b-collapse>
       </div>
 
@@ -220,10 +235,14 @@
     margin-top: 10px;
   }
 
-  .todo-filter-config {
+  .todo-filter-config-toggle {
     text-align: right;
     margin-bottom: 10px;
     margin-top: -20px;
+  }
+
+  .todo-filter-config-entries {
+    min-width: 530px;
   }
 
 </style>
