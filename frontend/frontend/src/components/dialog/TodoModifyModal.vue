@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-modal ref="todoModifyModalRef" hide-footer :title="'Modify ' + todo.title">
+    <b-modal ref="todoModifyModalRef" hide-footer :title="'Modify ' + todo.title" @click.native.stop="clearModifyModal">
       <div class="d-block text-center">
         <b-form-group id="todo-inputs" v-model="modified">
 
