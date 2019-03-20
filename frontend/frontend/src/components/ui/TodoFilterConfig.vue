@@ -10,19 +10,17 @@
 
     <div class="todo-filter-config-entries">
       <b-collapse id="collapse1" class="mt-2">
+
         <div class="form-inline">
-
           <b-form-input v-model="text1" type="text" class="todo-filter-config-entry" placeholder="Enter item limit"/>
-          <b-form-checkbox id="checkbox1" name="checkbox1" class="todo-filter-config-entry" v-model="status"
-                           value="accepted" unchecked-value="not_accepted">
-            Filter by title
-          </b-form-checkbox>
-          <b-form-checkbox id="checkbox2" name="checkbox1" v-model="status" value="accepted"
-                           unchecked-value="not_accepted">
+          <b-form-radio value="A" v-model="selected" name="some-radios" class="todo-filter-config-entry">
             Filter by date
-          </b-form-checkbox>
-
+          </b-form-radio>
+          <b-form-radio value="B" v-model="selected" name="some-radios">
+            Filter by state
+          </b-form-radio>
         </div>
+
       </b-collapse>
     </div>
 
@@ -44,7 +42,7 @@
 
   .todo-filter-config-entries {
     min-width: 200px;
-    margin-bottom: 7px;
+    margin-bottom: 10px;
   }
 
   .todo-filter-config-entry {
