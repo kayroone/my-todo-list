@@ -1,6 +1,6 @@
 import {frontendConfig} from '../config/frontend-config.js'
+import {util} from '../util/date-formatter';
 import $ from 'jquery'
-import moment from "moment";
 
 /**
  * Export all To Do service CRUD methods via todoService object.
@@ -24,6 +24,8 @@ export const todoService = {
  */
 
 function createTodo(todoBase) {
+
+  todoBase = util.formatDateInObjectBackend(todoBase);
 
   const requestProperties = {
     method: 'POST',
@@ -107,9 +109,13 @@ function getTodos(state, limit, offset) {
 
 function updateTodo(todoFull) {
 
+  todoFull = util.formatDateInObjectBackend(todoFull);
+
+  console.dir(todoFull);
+
   const requestOptions = {
     method: 'PUT',
-    headers:{ 'Content-Type': 'application/json' },
+    headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(todoFull),
     mode: 'cors'
   };
@@ -129,6 +135,12 @@ function updateTodo(todoFull) {
 
 function handleJsonResponse(response) {
 
+  // Handle errors:
+  if (!response.ok) {
+    const error = response.statusText;
+    return Promise.reject(error);
+  }
+
   // This could happen:
   if (response.status === 204 || response.text === "") {
     return Promise.resolve();
@@ -137,21 +149,10 @@ function handleJsonResponse(response) {
   // Finally process JSON response:
   return response.text().then(text => {
 
+    // This could return an array or a single object:
     const data = text && JSON.parse(text);
 
     // Convert to frontend date:
-    if (data.hasOwnProperty("dueDate")) {
-      const date = data.dueDate;
-      delete data.dueDate;
-      data.dueDate = moment(date).format('MMMM Do YYYY, h:mm:ss A');
-    }
-
-    // Handle errors:
-    if (!response.ok) {
-      const error = (data && data.message) || response.statusText;
-      return Promise.reject(error);
-    }
-
-    return data;
+    return util.formatDateInObjectFrontend(data);
   })
 }

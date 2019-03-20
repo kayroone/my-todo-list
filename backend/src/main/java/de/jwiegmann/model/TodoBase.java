@@ -25,7 +25,6 @@ public class TodoBase {
     @JsonProperty("title")
     private String title = null;
 
-    @NotNull
     @JsonProperty("description")
     private String description = null;
 

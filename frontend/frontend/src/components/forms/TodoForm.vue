@@ -30,7 +30,7 @@
   import TodoDatePicker from 'vuejs-datepicker';
   import {todoService} from "../../services/todo-service";
   import {eventBus} from '../../main';
-  import {util} from '../../util/helpers';
+  import {util} from '../../util/date-formatter';
 
   export default {
     name: 'TodoForm',
@@ -50,14 +50,16 @@
         const newTodo = {
           title: this.todo.title,
           description: this.todo.description,
-          dueDate: this.todo.date.toISOString(),
+          dueDate: this.todo.date,
           done: false
         };
 
         /* Create and get new to do item from API */
         todoService.createTodo(newTodo)
           .then(function (data) {
-            eventBus.$emit("todoAdded", data);
+            if (data) {
+              eventBus.$emit("todoAdded", data);
+            }
           });
 
         /* Clear */
@@ -68,7 +70,7 @@
 
       customFormatter(date) {
 
-        return util.formatDate(date);
+        return util.formatDateShort(date);
       }
     }
   }

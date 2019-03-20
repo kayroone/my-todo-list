@@ -6,7 +6,7 @@
 
         <div v-if="todo.id != null">
           <b-list-group-item>
-            {{ todo.title }} | {{ customFormatter(todo) }}
+            {{ todo.title }} | {{ todo.dueDate }}
             <label class="checkbox">
               <input type="checkbox" :checked="todo.done" @change="updateTodo(todo, $event)"/>
               <span class="default"></span>
@@ -35,7 +35,6 @@
 <script>
   import {todoService} from '../../services'
   import {eventBus} from '../../main';
-  import {util} from '../../util/helpers';
   import TodoModifyModal from "../dialog/TodoModify";
 
   export default {
@@ -84,18 +83,16 @@
         eventBus.$emit("modifyTodoClicked", todo);
       },
       showModal() {
+
         this.isModalVisible = true;
       },
       closeModal() {
+
         this.isModalVisible = false;
       },
       onTodoListUpdate(newTodo) {
 
         this.todos.unshift(newTodo);
-      },
-      customFormatter(date) {
-
-        return util.formatDateShort(date);
       }
     }
   }
