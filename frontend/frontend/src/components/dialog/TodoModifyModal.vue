@@ -16,8 +16,7 @@
 
           <!-- Date -->
           <todo-date-picker :bootstrap-styling="true" :format="customFormatter"
-                            :value="todo.dueDate"
-                            v-model="modified.dueDate">
+                            :value="todo.dueDate" v-model="modified.dueDate">
           </todo-date-picker>
 
         </b-form-group>
@@ -56,7 +55,10 @@
     created() {
 
       eventBus.$on("modifyModalOpened", todo => {
+
         this.todo = todo;
+        this.modified.dueDate = util.toDefaultDate(todo.dueDate);
+
         this.showModal();
       });
 

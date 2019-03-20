@@ -2,6 +2,7 @@ import moment from "moment";
 
 export const util = {
   formatDateShort,
+  toDefaultDate,
   formatDateInObjectFrontend,
   formatDateInObjectBackend
 };
@@ -9,6 +10,11 @@ export const util = {
 function formatDateShort(date) {
 
   return moment(date).format('MMM Do YYYY, h:mm A');
+}
+
+function toDefaultDate(date) {
+
+  return moment(date, 'MMM Do YYYY, h:mm A').toDate();
 }
 
 function formatDateInObjectFrontend(todo) {
