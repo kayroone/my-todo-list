@@ -10,20 +10,16 @@
 
     <div class="todo-filter-config-entries">
       <b-collapse id="config" class="mt-2">
-
         <div class="form-inline">
-          <number-input class="todo-filter-config-entry" v-model="itemLimit" @change="limitItems"
-                        :min="1" :max="100" inline controls rounded></number-input>
-          <b-form-radio value="date" v-model="sortByDate" @change="sortByDateSelected"
-                        name="some-radios" class="todo-filter-config-entry">
-            Sort by date
-          </b-form-radio>
-          <b-form-radio value="state" v-model="sortByState" @click="sortByStateSelected"
-                        name="some-radios">
-            Sort by state
-          </b-form-radio>
-        </div>
 
+          <!-- Limit to do items in list -->
+          <number-input v-model="itemLimit" v-on:change="limitItems" :min="1" :max="100"
+                        inline controls rounded class="todo-filter-config-entry"></number-input>
+
+          <b-form-radio-group v-model="sortOption" :options="options" v-on:change="changeSortOption">
+          </b-form-radio-group>
+
+        </div>
       </b-collapse>
     </div>
 
@@ -37,34 +33,26 @@
     name: "TodoFilterConfig",
     data() {
       return {
+        sortOption: "date",
+        options: [
+          {text: "Sort by date", value: "state"},
+          {text: "Sort by state", value: "date"}
+        ],
         itemLimit: 5,
         sortByDate: true,
         sortByState: false
       }
     },
-    created() {
-
-
-    },
     methods: {
-      sortByDateSelected() {
+      changeSortOption() {
 
-        this.sortByDate = true;
-        this.sortByState = false;
-
-        eventBus.$emit("sortByDateSelected");
+        eventBus.$emit("sortingChanged", this.sortOption);
       },
       sortByStateSelected() {
-
-        this.sortByState = true;
-        this.sortByDate = false;
 
         eventBus.$emit("sortByStateSelected");
       },
       limitItems() {
-
-        this.sortByDate = true;
-        this.sortByState = false;
 
         const newItemLimit = this.itemLimit;
 
@@ -90,6 +78,6 @@
   }
 
   .todo-filter-config-entry {
-    margin-right: 20px;
+    margin-right: 25px;
   }
 </style>

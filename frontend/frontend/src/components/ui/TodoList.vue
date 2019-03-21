@@ -73,11 +73,8 @@
       eventBus.$on("limitItemsTriggered", (newItemLimit) => {
         this.onTodoListLimitItems(newItemLimit);
       });
-      eventBus.$on("sortByDateSelected", () => {
-        this.onTodoListSortByDate();
-      });
-      eventBus.$on("sortByStateSelected", () => {
-        this.onTodoListSortByState();
+      eventBus.$on("sortingChanged", (sortOption) => {
+        this.sortingChanged(sortOption);
       });
     },
     beforeDestroy() {
@@ -85,8 +82,7 @@
       eventBus.$off("todoAdded", this.onTodoListAdd);
       eventBus.$off("todoModified", this.onTodoListModify);
       eventBus.$off("limitItemsTriggered", this.onTodoListLimitItems);
-      eventBus.$off("sortByDateSelected", this.onTodoListSortByDate);
-      eventBus.$off("sortByStateSelected", this.onTodoListSortByState);
+      eventBus.$off("sortingChanged", this.sortingChanged);
     },
     methods: {
       loadTodos(state, limit, offset) {
@@ -97,9 +93,6 @@
         }
         if (!limit) {
           limit = 5;
-        }
-        if (limit === 0) {
-          limit = 1;
         }
         if (!offset) {
           offset = 0;
@@ -137,7 +130,12 @@
       },
       onTodoListSortByDate() {
 
-        /* Sort todos array by date */
+        /* First sort todos array by ID */
+        this.todos.sort(function (todoOne, todoTwo) {
+          return todoOne.id - todoTwo.id
+        });
+
+        /* Than sort by date */
         this.todos.sort(function (todoOne, todoTwo) {
 
           const todoOneDate = new Date(todoOne.dueDate);
@@ -148,11 +146,23 @@
       },
       onTodoListSortByState() {
 
-        /* Sort by unfinished todos */
-        this.todos.sort(function (x, y) {
-
-          return (x === y) ? 0 : x ? 1 : -1;
+        /* First sort todos array by ID */
+        this.todos.sort(function (todoOne, todoTwo) {
+          return todoOne.id - todoTwo.id
         });
+
+        /* Than sort by state */
+        this.todos.sort(function (todoOne, todoTwo) {
+          return todoOne.done - todoTwo.done
+        });
+      },
+      sortingChanged(sortOption) {
+
+        if (sortOption === "state") {
+          this.onTodoListSortByState();
+        } else {
+          this.onTodoListSortByDate();
+        }
       },
       onTodoListLimitItems(newItemLimit) {
 
