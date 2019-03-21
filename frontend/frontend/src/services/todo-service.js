@@ -136,7 +136,7 @@ function handleJsonResponse(response) {
 
   /* Handle errors */
   if (!response.ok) {
-    const error = response.statusText;
+    const error = response.statusText || "";
     return Promise.reject(error);
   }
 

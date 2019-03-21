@@ -1,5 +1,5 @@
 <template>
-  <h2>My Todo's</h2>
+  <h2>My Todos</h2>
 </template>
 
 <script>

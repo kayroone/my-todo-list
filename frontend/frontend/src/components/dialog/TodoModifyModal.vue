@@ -11,8 +11,8 @@
 
           <!-- Description -->
           <b-form-textarea id="todo-description" class="todo-modify-input"
-                           v-model="modified.description"
-                           :value="modified.description"/>
+                           v-model="modified.description" :value="modified.description"
+                           placeholder="Enter description"/>
 
           <!-- Date -->
           <todo-date-picker :bootstrap-styling="true" :format="customFormatter" class="todo-modify-input"
@@ -135,6 +135,26 @@
 </script>
 
 <style scoped>
+
+  textarea::-webkit-input-placeholder {
+    color: #9a9da0 !important;
+    opacity: 0.5;
+  }
+
+  textarea:-moz-placeholder { /* Firefox 18- */
+    color: #9a9da0 !important;
+    opacity: 0.5;
+  }
+
+  textarea::-moz-placeholder {  /* Firefox 19+ */
+    color: #9a9da0 !important;
+    opacity: 0.5;
+  }
+
+  textarea:-ms-input-placeholder {
+    color: #9a9da0 !important;
+    opacity: 0.5;
+  }
 
   .todo-modify-input {
     margin-top: 10px;
