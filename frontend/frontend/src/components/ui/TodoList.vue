@@ -3,29 +3,39 @@
     <div class="wrapper-main">
 
       <modal ref="modal"></modal>
-      <todo-filter-config></todo-filter-config>
 
-      <b-list-group v-for="(todo, idx) in todos" :key="todo.id">
-        <b-list-group-item>
+      <div v-if="todos.length > 0">
+        <transition-group name="fade">
+          <todo-filter-config :key="todoFilterConfigKey"></todo-filter-config>
+        </transition-group>
+      </div>
 
-          <!-- List entry -->
-          {{ todo.title }} | {{ todo.dueDate }} | {{ todo.id }}
-          <label class="checkbox">
-            <input type="checkbox" :checked="todo.done" @change="updateTodo(todo, $event)"/>
-            <span class="default"></span>
-          </label>
+      <div v-else>
+        <h3 class="todo-no-items-transparency">No items added yet</h3>
+      </div>
 
-          <div class="fa-pull-right vertical-center">
-            <button class="btn btn-xs pull-right" @click="openModifyModal(todo)">
-              <font-awesome-icon icon="pen"/>
-            </button>
-            <button class="btn btn-xs pull-right" @click="deleteTodo(todo, idx)">
-              <font-awesome-icon icon="trash"/>
-            </button>
-          </div>
+      <transition-group name="fade">
+        <b-list-group v-for="(todo, idx) in todos" :key="todo.id">
+          <b-list-group-item>
 
-        </b-list-group-item>
-      </b-list-group>
+            {{ todo.title }} | {{ todo.dueDate }}
+            <label class="checkbox">
+              <input type="checkbox" :checked="todo.done" @change="updateTodo(todo, $event)"/>
+              <span class="default"></span>
+            </label>
+
+            <div class="fa-pull-right vertical-center">
+              <button class="btn btn-xs pull-right" @click="openModifyModal(todo)">
+                <font-awesome-icon icon="pen"/>
+              </button>
+              <button class="btn btn-xs pull-right" @click="deleteTodo(todo, idx)">
+                <font-awesome-icon icon="trash"/>
+              </button>
+            </div>
+
+          </b-list-group-item>
+        </b-list-group>
+      </transition-group>
 
     </div>
   </div>
@@ -42,6 +52,7 @@
     components: {modal, TodoFilterConfig},
     data() {
       return {
+        todoFilterConfigKey: 0,
         modalShow: false,
         todos: []
       }
@@ -187,5 +198,17 @@
 
   #todo-inputs * {
     margin-top: 10px;
+  }
+
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+  }
+
+  .fade-enter, .fade-leave-to {
+    opacity: 0;
+  }
+
+  .todo-no-items-transparency {
+    opacity: 0.3;
   }
 </style>
