@@ -5,17 +5,17 @@
         <b-form-group v-model="modified">
 
           <!-- Title -->
-          <b-form-input id="todo-title" type="text"
+          <b-form-input id="todo-title" type="text" class="todo-modify-input"
                         v-model="modified.title" required
                         :placeholder="modified.title"/>
 
           <!-- Description -->
-          <b-form-textarea id="todo-description"
+          <b-form-textarea id="todo-description" class="todo-modify-input"
                            v-model="modified.description"
                            :value="modified.description"/>
 
           <!-- Date -->
-          <todo-date-picker :bootstrap-styling="true" :format="customFormatter"
+          <todo-date-picker :bootstrap-styling="true" :format="customFormatter" class="todo-modify-input"
                             :value="modified.dueDate" v-model="modified.dueDate">
           </todo-date-picker>
 
@@ -101,9 +101,9 @@
   }
 </script>
 
-<style>
+<style scoped>
 
-  #todo-inputs * {
+  .todo-modify-input {
     margin-top: 10px;
   }
 </style>
