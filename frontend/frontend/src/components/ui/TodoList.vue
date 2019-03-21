@@ -53,8 +53,7 @@
     data() {
       return {
         itemLimit: 5,
-        sortByDate: true,
-        sortByState: false,
+        sortOption: "date",
         todoFilterConfigKey: 0,
         modalShow: false,
         todos: []
@@ -101,6 +100,7 @@
         todoService.getTodos(state, limit, offset).then(data => {
           if (data) {
             this.todos = data.slice(0);
+            this.sortingChanged(this.sortOption);
           }
         });
       },
@@ -160,8 +160,10 @@
 
         if (sortOption === "state") {
           this.onTodoListSortByState();
+          this.sortOption = "state";
         } else {
           this.onTodoListSortByDate();
+          this.sortOption = "date";
         }
       },
       onTodoListLimitItems(newItemLimit) {
