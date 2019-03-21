@@ -22,12 +22,24 @@
         <b-list-group v-for="(todo, idx) in todos" :key="todo.id">
           <b-list-group-item class="list-group-item">
 
-            {{ todo.title }} | {{ todo.dueDate }}
+            <!-- Title and date -->
+            <template v-if="todo.title.length > 15">
+              {{ todo.title.substring(0,15) + ".." }}
+            </template>
+
+            <template v-else>
+              {{ todo.title }}
+            </template>
+
+            | {{ todo.dueDate }}
+
+            <!-- Set done -->
             <label class="checkbox">
               <input type="checkbox" :checked="todo.done" @change="updateTodo(todo, $event)"/>
               <span class="default"></span>
             </label>
 
+            <!-- Modify and delete -->
             <div class="fa-pull-right vertical-center">
               <button class="btn btn-xs pull-right" @click="openModifyModal(todo)">
                 <font-awesome-icon icon="pen"/>
