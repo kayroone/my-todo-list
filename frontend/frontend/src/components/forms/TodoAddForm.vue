@@ -30,8 +30,8 @@
 
 <script>
   import {EventBus} from '../../main';
-  import {DateUtil} from '../../util/date-formatter';
-  import {TodoService} from "../../services/todo-service";
+  import {DateUtil} from '../../util';
+  import {TodoService} from "../../services";
   import TodoDatePicker from 'vuejs-datepicker';
 
   export default {

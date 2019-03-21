@@ -25,7 +25,7 @@
 
 <script>
   import {EventBus} from '../../main';
-  import {FrontendConfig} from '../../config/frontend-config';
+  import {FrontendConfig} from '../../config';
 
   export default {
     name: "TodoImprintModal",
