@@ -1,8 +1,8 @@
 <template>
   <div>
-    <b-modal ref="todoModifyModalRef" hide-footer :title="'Modify ' + modified.title">
+    <b-modal ref="todoModifyModalRef" hide-footer title="Modify">
       <div class="d-block text-center">
-        <b-form-group id="todo-inputs" v-model="modified">
+        <b-form-group v-model="modified">
 
           <!-- Title -->
           <b-form-input id="todo-title" type="text"
@@ -23,7 +23,7 @@
       </div>
 
       <b-button class="mt-2" variant="outline-dark"
-                block @click="saveModifyModal(todo, modified)">Save
+                block @click="saveModifyModal(modified)">Save
       </b-button>
       <b-button class="mt-3" variant="outline-dark"
                 block @click="clearModifyModal">Close
@@ -37,6 +37,7 @@
   import {eventBus} from '../../main';
   import TodoDatePicker from 'vuejs-datepicker';
   import {util} from '../../util/date-formatter';
+  import {todoService} from '../../services'
 
   export default {
     name: "TodoModifyModal",
@@ -44,33 +45,25 @@
     data() {
       return {
         modified: {
+          id: null,
           title: '',
           description: '',
           dueDate: new Date(),
           done: false,
-          id: null,
-          idx: null
-        },
-        todo: {
-          title: '',
-          description: '',
-          dueDate: new Date(),
-          done: false,
-          id: null,
-          idx: null
         }
       }
     },
-    created() {
+    mounted() {
 
       eventBus.$on("modifyModalOpened", todo => {
         this.showModal(todo);
       });
+    },
+    created() {
 
       eventBus.$on("modifyModalClosed", () => {
         this.clearModifyModal();
       });
-
     },
     beforeDestroy() {
 
@@ -80,31 +73,25 @@
     methods: {
       showModal(todo) {
 
-        this.modified = {};
-        this.todo = todo;
-
         this.modified.title = todo.title;
-        this.modified.description = todo.description ? todo.description : "";
+        this.modified.description = todo.description;
         this.modified.done = todo.done;
         this.modified.id = todo.id;
-        this.modified.idx = todo.idx;
         this.modified.dueDate = util.toDefaultDate(todo.dueDate);
 
         this.$refs.todoModifyModalRef.show()
       },
       clearModifyModal() {
 
-        this.todo = {};
         this.modified = {};
-
         this.$refs.todoModifyModalRef.hide()
       },
-      saveModifyModal(todo, modified) {
+      saveModifyModal(modified) {
 
-        this.modified.dueDate = util.toDefaultDate(modified.dueDate);
-        eventBus.$emit("todoModified", modified);
-
-        this.$refs.todoModifyModalRef.toggle('#toggleBtn')
+        todoService.updateTodo(modified).then(() => {
+          eventBus.$emit("todoModified");
+          this.$refs.todoModifyModalRef.toggle('#toggleBtn')
+        });
       },
       customFormatter(date) {
 

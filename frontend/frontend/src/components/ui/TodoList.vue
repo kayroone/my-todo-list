@@ -2,35 +2,30 @@
   <div class="container-fluid">
     <div class="wrapper-main">
 
+      <modal ref="modal"></modal>
       <todo-filter-config></todo-filter-config>
 
       <b-list-group v-for="(todo, idx) in todos" :key="todo.id">
+        <b-list-group-item>
 
-        <div v-if="todo.id != null">
-          <b-list-group-item>
+          <!-- List entry -->
+          {{ todo.title }} | {{ todo.dueDate }} | {{ todo.id }}
+          <label class="checkbox">
+            <input type="checkbox" :checked="todo.done" @change="updateTodo(todo, $event)"/>
+            <span class="default"></span>
+          </label>
 
-            <!-- List entry -->
-            {{ todo.title }} | {{ todo.dueDate }} | {{ todo.id }}
-            <label class="checkbox">
-              <input type="checkbox" :checked="todo.done" @change="updateTodo(todo, $event)"/>
-              <span class="default"></span>
-            </label>
+          <div class="fa-pull-right vertical-center">
+            <button class="btn btn-xs pull-right" @click="openModifyModal(todo)">
+              <font-awesome-icon icon="pen"/>
+            </button>
+            <button class="btn btn-xs pull-right" @click="deleteTodo(todo, idx)">
+              <font-awesome-icon icon="trash"/>
+            </button>
+          </div>
 
-            <div class="fa-pull-right vertical-center">
-              <button class="btn btn-xs pull-right" @click="openModifyModal(todo, idx)">
-                <font-awesome-icon icon="pen"/>
-              </button>
-              <button class="btn btn-xs pull-right" @click="deleteTodo(todo, idx)">
-                <font-awesome-icon icon="trash"/>
-              </button>
-            </div>
-
-          </b-list-group-item>
-        </div>
-
+        </b-list-group-item>
       </b-list-group>
-
-      <modal ref="modal"></modal>
 
     </div>
   </div>
@@ -39,7 +34,6 @@
 <script>
   import {todoService} from '../../services'
   import {eventBus} from '../../main';
-  import {util} from '../../util/date-formatter';
   import modal from "../dialog/TodoModifyModal";
   import TodoFilterConfig from "../ui/TodoFilterConfig";
 
@@ -59,9 +53,8 @@
       eventBus.$on("todoAdded", newTodo => {
         this.onTodoListAdd(newTodo);
       });
-
-      eventBus.$on("todoModified", modifiedTodo => {
-        this.onTodoListModify(modifiedTodo);
+      eventBus.$on("todoModified", () => {
+        this.onTodoListModify();
       });
     },
     beforeDestroy() {
@@ -82,26 +75,25 @@
 
         todo.done = event.target.checked;
         todoService.updateTodo(todo);
-        this.todo = util.formatDateInObjectFrontend(todo);
       },
       deleteTodo(todo, idx) {
 
         todoService.deleteTodo(todo.id);
         this.todos.splice(idx, 1);
       },
-      openModifyModal(todo, idx) {
+      openModifyModal(todo) {
 
-        todo.idx = idx;
-        eventBus.$emit("modifyModalOpened", todo);
+        todoService.getTodo(todo.id).then((modifyTodo) => {
+          eventBus.$emit("modifyModalOpened", modifyTodo)
+        });
       },
       onTodoListAdd(newTodo) {
 
         this.todos.unshift(newTodo);
       },
-      onTodoListModify(modifiedTodo) {
+      onTodoListModify() {
 
-        modifiedTodo = util.formatDateInObjectFrontend(modifiedTodo);
-        this.$set(this.todos, modifiedTodo.idx, modifiedTodo);
+        this.loadTodos();
       }
     },
   }
@@ -131,6 +123,7 @@
 
   .list-group-item {
     margin-top: 7px;
+    max-height: 52px;
   }
 
   .checkbox {
