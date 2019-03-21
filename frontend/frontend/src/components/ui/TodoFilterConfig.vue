@@ -16,7 +16,8 @@
 
           <!-- Limit to do items in list -->
           <number-input v-model="itemLimit" v-on:change="limitItems" :min="1" :max="100"
-                        inline controls rounded class="todo-filter-config-entry"></number-input>
+                        inline controls rounded class="todo-filter-config-entry"
+                        v-b-tooltip.hover title="Specify maximum items displayed in list"></number-input>
 
           <!-- Sort by date or state -->
           <b-form-radio-group v-model="sortOption" :options="options" v-on:change="changeSortOption">
