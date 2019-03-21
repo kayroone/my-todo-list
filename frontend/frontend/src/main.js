@@ -11,6 +11,9 @@ import {library} from '@fortawesome/fontawesome-svg-core'
 import {faCalendar, faCogs, faFileWord, faPen, faTrash} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
 
+import VueNumberInput from '@chenfengyuan/vue-number-input';
+
+Vue.use(VueNumberInput);
 Vue.use(BootstrapVue);
 
 library.add(faTrash, faPen, faFileWord, faCalendar, faCogs);

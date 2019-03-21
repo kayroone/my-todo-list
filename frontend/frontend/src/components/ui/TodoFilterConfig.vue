@@ -2,18 +2,19 @@
   <div>
 
     <div class="todo-filter-config-toggle">
-      <b-button v-b-toggle.collapse1 variant="outline-dark">
+      <b-button v-b-toggle.config variant="outline-dark">
         <font-awesome-icon icon="cogs"/>
         Filter config
       </b-button>
     </div>
 
     <div class="todo-filter-config-entries">
-      <b-collapse id="collapse1" class="mt-2">
+      <b-collapse id="config" class="mt-2">
 
         <div class="form-inline">
-          <b-form-input type="number" class="todo-filter-config-entry" placeholder="Enter item limit"/>
-          <b-form-radio value="date" v-model="sortByDate" @click="sortByDateSelected"
+          <number-input class="todo-filter-config-entry" v-model="itemLimit" @change="limitItems"
+                        :min="1" :max="100" inline controls rounded></number-input>
+          <b-form-radio value="date" v-model="sortByDate" @change="sortByDateSelected"
                         name="some-radios" class="todo-filter-config-entry">
             Sort by date
           </b-form-radio>
@@ -36,6 +37,7 @@
     name: "TodoFilterConfig",
     data() {
       return {
+        itemLimit: 5,
         sortByDate: true,
         sortByState: false
       }
@@ -43,20 +45,33 @@
     created() {
 
 
-
     },
     methods: {
       sortByDateSelected() {
+
         this.sortByDate = true;
         this.sortByState = false;
 
         eventBus.$emit("sortByDateSelected");
       },
       sortByStateSelected() {
+
         this.sortByState = true;
         this.sortByDate = false;
 
         eventBus.$emit("sortByStateSelected");
+      },
+      limitItems() {
+
+        this.sortByDate = true;
+        this.sortByState = false;
+
+        const newItemLimit = this.itemLimit;
+
+        eventBus.$emit("limitItemsTriggered", newItemLimit);
+      },
+      restrictInput() {
+
       }
     }
   }

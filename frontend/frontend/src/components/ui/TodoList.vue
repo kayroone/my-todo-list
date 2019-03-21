@@ -52,6 +52,9 @@
     components: {modal, TodoFilterConfig},
     data() {
       return {
+        itemLimit: 5,
+        sortByDate: true,
+        sortByState: false,
         todoFilterConfigKey: 0,
         modalShow: false,
         todos: []
@@ -67,16 +70,42 @@
       eventBus.$on("todoModified", () => {
         this.onTodoListModify();
       });
+      eventBus.$on("limitItemsTriggered", (newItemLimit) => {
+        this.onTodoListLimitItems(newItemLimit);
+      });
+      eventBus.$on("sortByDateSelected", () => {
+        this.onTodoListSortByDate();
+      });
+      eventBus.$on("sortByStateSelected", () => {
+        this.onTodoListSortByState();
+      });
     },
     beforeDestroy() {
 
       eventBus.$off("todoAdded", this.onTodoListAdd);
       eventBus.$off("todoModified", this.onTodoListModify);
+      eventBus.$off("limitItemsTriggered", this.onTodoListLimitItems);
+      eventBus.$off("sortByDateSelected", this.onTodoListSortByDate);
+      eventBus.$off("sortByStateSelected", this.onTodoListSortByState);
     },
     methods: {
-      loadTodos() {
+      loadTodos(state, limit, offset) {
 
-        todoService.getTodos("all", 5, 0).then(data => {
+        /* Sanity check */
+        if (!state) {
+          state = "all";
+        }
+        if (!limit) {
+          limit = 5;
+        }
+        if (limit === 0) {
+          limit = 1;
+        }
+        if (!offset) {
+          offset = 0;
+        }
+
+        todoService.getTodos(state, limit, offset).then(data => {
           if (data) {
             this.todos = data.slice(0);
           }
@@ -105,6 +134,29 @@
       onTodoListModify() {
 
         this.loadTodos();
+      },
+      onTodoListSortByDate() {
+
+        /* Sort todos array by date */
+        this.todos.sort(function (todoOne, todoTwo) {
+
+          const todoOneDate = new Date(todoOne.dueDate);
+          const todoTwoDate = new Date(todoTwo.dueDate);
+
+          return todoOneDate - todoTwoDate;
+        });
+      },
+      onTodoListSortByState() {
+
+        /* Sort by unfinished todos */
+        this.todos.sort(function (x, y) {
+
+          return (x === y) ? 0 : x ? 1 : -1;
+        });
+      },
+      onTodoListLimitItems(newItemLimit) {
+
+        this.loadTodos("all", newItemLimit, 0);
       }
     },
   }
