@@ -11,7 +11,7 @@
       </div>
 
       <div v-else>
-        <h3 class="todo-no-items-transparency">No items added yet</h3>
+        <h3 class="todo-no-items-transparency">Do you have nothing to do?</h3>
       </div>
 
       <transition-group name="fade">

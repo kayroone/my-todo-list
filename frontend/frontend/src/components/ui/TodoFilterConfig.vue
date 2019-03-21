@@ -13,10 +13,12 @@
 
         <div class="form-inline">
           <b-form-input type="number" class="todo-filter-config-entry" placeholder="Enter item limit"/>
-          <b-form-radio value="date" name="some-radios" class="todo-filter-config-entry">
+          <b-form-radio value="date" v-model="sortByDate" @click="sortByDateSelected"
+                        name="some-radios" class="todo-filter-config-entry">
             Sort by date
           </b-form-radio>
-          <b-form-radio value="state" name="some-radios">
+          <b-form-radio value="state" v-model="sortByState" @click="sortByStateSelected"
+                        name="some-radios">
             Sort by state
           </b-form-radio>
         </div>
@@ -28,8 +30,35 @@
 </template>
 
 <script>
+  import {eventBus} from '../../main';
+
   export default {
-    name: "TodoFilterConfig"
+    name: "TodoFilterConfig",
+    data() {
+      return {
+        sortByDate: true,
+        sortByState: false
+      }
+    },
+    created() {
+
+
+
+    },
+    methods: {
+      sortByDateSelected() {
+        this.sortByDate = true;
+        this.sortByState = false;
+
+        eventBus.$emit("sortByDateSelected");
+      },
+      sortByStateSelected() {
+        this.sortByState = true;
+        this.sortByDate = false;
+
+        eventBus.$emit("sortByStateSelected");
+      }
+    }
   }
 </script>
 

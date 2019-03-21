@@ -3,7 +3,6 @@
     <b-modal ref="todoImprintModalRef" hide-footer title="Imprint">
       <div class="imprint-data">
         <b>Angaben gemäß § 5 TMG:</b><br>
-        <p/>
         {{ imprintName }} <br>
         {{ imprintStreet }} <br>
         {{ imprintTown }} <br>
