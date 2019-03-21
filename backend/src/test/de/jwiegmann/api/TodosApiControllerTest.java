@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import de.jwiegmann.app.RFC3339DateFormat;
 import de.jwiegmann.model.TodoBase;
 import de.jwiegmann.model.TodoFull;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +22,7 @@ import java.text.ParseException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
+import java.util.Iterator;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -80,6 +82,43 @@ public class TodosApiControllerTest {
             .andExpect(jsonPath("$.dueDate", is(testDueDate)))
             .andExpect(jsonPath("$.title", is(testTitle)))
             .andExpect(jsonPath("$.done", is(testDoneValue)));
+
+        // 3. Cleanup:
+        removeAllToDos();
+    }
+
+    @Test
+    public void createTodoWithMissingData() throws Exception {
+
+        // 1. Arrange:
+        String requestJsonBody = this.objectMapper.writeValueAsString(this.todoBase);
+
+        JSONObject jsonObject = new JSONObject(requestJsonBody);
+        JSONObject requestObject = new JSONObject(requestJsonBody);
+
+        Iterator keys = jsonObject.keys();
+
+        while (keys.hasNext()) {
+
+            String key = (String) keys.next();
+            String value = requestObject.getString(key);
+
+            requestObject.remove(key);
+
+            if (key.equalsIgnoreCase("description")) {
+                this.mvc.perform(post("/todos")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestObject.toString()))
+                    .andExpect(status().isCreated());
+            } else {
+                this.mvc.perform(post("/todos")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestObject.toString()))
+                    .andExpect(status().isBadRequest());
+            }
+
+            requestObject.put(key, value);
+        }
 
         // 3. Cleanup:
         removeAllToDos();
