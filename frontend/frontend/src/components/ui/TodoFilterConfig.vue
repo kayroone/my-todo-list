@@ -33,7 +33,7 @@
     name: "TodoFilterConfig",
     data() {
       return {
-        sortOption: "date",
+        sortOption: "state",
         options: [
           {text: "Sort by date", value: "state"},
           {text: "Sort by state", value: "date"}
