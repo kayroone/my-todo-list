@@ -1,5 +1,5 @@
 
-export const frontendConfig = {
+export const FrontendConfig = {
   apiUrl: "http://localhost:9080/todos/",
   imprintName: "Jan Wiegmann",
   imprintStreet: "Werrastraße 12",

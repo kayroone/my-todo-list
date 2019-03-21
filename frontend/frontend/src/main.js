@@ -22,7 +22,7 @@ Vue.component('font-awesome-icon', FontAwesomeIcon);
 Vue.config.productionTip = false;
 
 /* Event bus */
-export const eventBus = new Vue();
+export const EventBus = new Vue();
 
 /* eslint-disable no-new */
 new Vue({

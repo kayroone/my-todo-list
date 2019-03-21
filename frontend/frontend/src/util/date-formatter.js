@@ -1,6 +1,6 @@
 import moment from "moment";
 
-export const util = {
+export const DateUtil = {
   formatDateShort,
   toDefaultDate,
   formatDateInObjectFrontend,
@@ -40,11 +40,26 @@ function formatDateInObjectFrontend(todo) {
 
 function formatDateInObjectBackend(todo) {
 
-  if (todo.hasOwnProperty("dueDate") && todo.dueDate) {
-    const date = moment(todo.dueDate, 'MMM Do YYYY, h:mm A').toDate();
-    delete todo.dueDate;
-    todo.dueDate = date.toISOString();
+  const formattedObject = deepCopy(todo);
+
+  if (formattedObject.hasOwnProperty("dueDate") && formattedObject.dueDate) {
+    const date = toDefaultDate(formattedObject.dueDate);
+    delete formattedObject.dueDate;
+    formattedObject.dueDate = date.toISOString();
   }
 
-  return todo;
+  return formattedObject;
+}
+
+function deepCopy(objectSource) {
+
+  let objectTarget = {};
+
+  for (let prop in objectSource) {
+    if (objectSource.hasOwnProperty(prop)) {
+      objectTarget[prop] = objectSource[prop];
+    }
+  }
+
+  return objectTarget;
 }

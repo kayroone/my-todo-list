@@ -3,21 +3,21 @@
     <div class="space-top text-center">
       <b-button class="text-dark" variant="link" @click="openImprintModal">Imprint</b-button>
     </div>
-    <modal ref="modal"></modal>
+    <todo-imprint-modal></todo-imprint-modal>
   </div>
 </template>
 
 <script>
-  import {eventBus} from '../../main';
-  import modal from '../dialog/TodoImprintModal';
+  import {EventBus} from '../../main';
+  import TodoImprintModal from '../dialog/TodoImprintModal';
 
   export default {
     name: "TodoFooter",
-    components: {modal},
+    components: {TodoImprintModal},
     methods: {
       openImprintModal() {
 
-        eventBus.$emit("imprintModalOpened");
+        EventBus.$emit("imprintModalOpened");
       }
     }
   }

@@ -34,10 +34,10 @@
 </template>
 
 <script>
-  import {eventBus} from '../../main';
+  import {EventBus} from '../../main';
+  import {DateUtil} from '../../util/date-formatter';
+  import {TodoService} from '../../services'
   import TodoDatePicker from 'vuejs-datepicker';
-  import {util} from '../../util/date-formatter';
-  import {todoService} from '../../services'
 
   export default {
     name: "TodoModifyModal",
@@ -55,20 +55,20 @@
     },
     mounted() {
 
-      eventBus.$on("modifyModalOpened", todo => {
+      EventBus.$on("modifyModalOpened", todo => {
         this.showModal(todo);
       });
     },
     created() {
 
-      eventBus.$on("modifyModalClosed", () => {
+      EventBus.$on("modifyModalClosed", () => {
         this.clearModifyModal();
       });
     },
     beforeDestroy() {
 
-      eventBus.$off("modifyModalOpened", this.showModal);
-      eventBus.$off("modifyModalClosed", this.clearModifyModal);
+      EventBus.$off("modifyModalOpened", this.showModal);
+      EventBus.$off("modifyModalClosed", this.clearModifyModal);
     },
     methods: {
       showModal(todo) {
@@ -77,7 +77,7 @@
         this.modified.description = todo.description;
         this.modified.done = todo.done;
         this.modified.id = todo.id;
-        this.modified.dueDate = util.toDefaultDate(todo.dueDate);
+        this.modified.dueDate = DateUtil.toDefaultDate(todo.dueDate);
 
         this.$refs.todoModifyModalRef.show()
       },
@@ -88,14 +88,14 @@
       },
       saveModifyModal(modified) {
 
-        todoService.updateTodo(modified).then(() => {
-          eventBus.$emit("todoModified");
+        TodoService.updateTodo(modified).then(() => {
+          EventBus.$emit("todoModified");
           this.$refs.todoModifyModalRef.toggle('#toggleBtn')
         });
       },
       customFormatter(date) {
 
-        return util.formatDateShort(date);
+        return DateUtil.formatDateShort(date);
       }
     }
   }

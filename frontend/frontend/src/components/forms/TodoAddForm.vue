@@ -29,10 +29,10 @@
 </template>
 
 <script>
+  import {EventBus} from '../../main';
+  import {DateUtil} from '../../util/date-formatter';
+  import {TodoService} from "../../services/todo-service";
   import TodoDatePicker from 'vuejs-datepicker';
-  import {todoService} from "../../services/todo-service";
-  import {eventBus} from '../../main';
-  import {util} from '../../util/date-formatter';
 
   export default {
     name: 'TodoForm',
@@ -58,10 +58,10 @@
         };
 
         /* Create and get new to do item from API */
-        todoService.createTodo(newTodo)
+        TodoService.createTodo(newTodo)
           .then(function (data) {
             if (data) {
-              eventBus.$emit("todoAdded", data);
+              EventBus.$emit("todoAdded", data);
             }
           });
 
@@ -73,7 +73,7 @@
 
       customFormatter(date) {
 
-        return util.formatDateShort(date);
+        return DateUtil.formatDateShort(date);
       }
     }
   }

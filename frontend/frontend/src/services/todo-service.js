@@ -1,14 +1,14 @@
-import {frontendConfig} from '../config/frontend-config.js'
-import {util} from '../util/date-formatter';
+import {FrontendConfig} from '../config/frontend-config.js'
+import {DateUtil} from '../util/date-formatter';
 import $ from 'jquery'
 
 /**
- * Export all To Do service CRUD methods via todoService object.
+ * Export all To Do service CRUD methods via TodoService object.
  *
  * @type {{getTodos: (function(*=, *=, *=): *), updateTodo: (function(*=): *), getTodo: (function(*): *), deleteTodo: (function(*): *), createTodo: (function(*=): *)}}
  */
 
-export const todoService = {
+export const TodoService = {
   createTodo,
   deleteTodo,
   getTodo,
@@ -25,16 +25,16 @@ export const todoService = {
 
 function createTodo(todoBase) {
 
-  todoBase = util.formatDateInObjectBackend(todoBase);
+  const requestObject = DateUtil.formatDateInObjectBackend(todoBase);
 
   const requestProperties = {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(todoBase),
+    body: JSON.stringify(requestObject),
     mode: 'cors'
   };
 
-  return fetch(`${frontendConfig.apiUrl}`, requestProperties)
+  return fetch(`${FrontendConfig.apiUrl}`, requestProperties)
     .then(handleJsonResponse);
 }
 
@@ -52,7 +52,7 @@ function deleteTodo(todoId) {
     mode: 'cors'
   };
 
-  const fetchUrl = `${frontendConfig.apiUrl}` + todoId;
+  const fetchUrl = `${FrontendConfig.apiUrl}` + todoId;
 
   return fetch(fetchUrl, requestProperties)
     .then(response => {
@@ -74,7 +74,7 @@ function getTodo(todoId) {
     mode: 'cors'
   };
 
-  const fetchUrl = `${frontendConfig.apiUrl}` + todoId;
+  const fetchUrl = `${FrontendConfig.apiUrl}` + todoId;
 
   return fetch(fetchUrl, requestOptions)
     .then(handleJsonResponse);
@@ -93,7 +93,7 @@ function getTodos(state, limit, offset) {
     mode: 'cors'
   };
 
-  const fetchUrl = `${frontendConfig.apiUrl}` + "?" +
+  const fetchUrl = `${FrontendConfig.apiUrl}` + "?" +
     $.param({state: state, limit: limit, offset: offset});
 
   return fetch(fetchUrl, requestOptions)
@@ -109,16 +109,16 @@ function getTodos(state, limit, offset) {
 
 function updateTodo(todoFull) {
 
-  todoFull = util.formatDateInObjectBackend(todoFull);
+  const requestObject = DateUtil.formatDateInObjectBackend(todoFull);
 
   const requestOptions = {
     method: 'PUT',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(todoFull),
+    body: JSON.stringify(requestObject),
     mode: 'cors'
   };
 
-  const fetchUrl = `${frontendConfig.apiUrl}` + todoFull.id;
+  const fetchUrl = `${FrontendConfig.apiUrl}` + requestObject.id;
 
   return fetch(fetchUrl, requestOptions)
     .then(handleJsonResponse);
@@ -151,6 +151,6 @@ function handleJsonResponse(response) {
     const data = text && JSON.parse(text);
 
     // Convert to frontend date:
-    return util.formatDateInObjectFrontend(data);
+    return DateUtil.formatDateInObjectFrontend(data);
   })
 }

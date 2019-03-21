@@ -2,7 +2,7 @@
   <div class="container-fluid">
     <div class="wrapper-main">
 
-      <modal ref="modal"></modal>
+      <todo-modify-modal></todo-modify-modal>
 
       <div v-if="todos.length > 0">
         <transition-group name="fade">
@@ -42,14 +42,14 @@
 </template>
 
 <script>
-  import {todoService} from '../../services'
-  import {eventBus} from '../../main';
-  import modal from "../dialog/TodoModifyModal";
+  import {EventBus} from '../../main';
+  import {TodoService} from '../../services'
   import TodoFilterConfig from "../ui/TodoFilterConfig";
+  import TodoModifyModal from "../dialog/TodoModifyModal";
 
   export default {
     name: "TodoList",
-    components: {modal, TodoFilterConfig},
+    components: {TodoModifyModal, TodoFilterConfig},
     data() {
       return {
         itemLimit: 5,
@@ -63,25 +63,25 @@
 
       this.loadTodos();
 
-      eventBus.$on("todoAdded", newTodo => {
+      EventBus.$on("todoAdded", newTodo => {
         this.onTodoListAdd(newTodo);
       });
-      eventBus.$on("todoModified", () => {
+      EventBus.$on("todoModified", () => {
         this.onTodoListModify();
       });
-      eventBus.$on("limitItemsTriggered", (newItemLimit) => {
+      EventBus.$on("limitItemsTriggered", (newItemLimit) => {
         this.onTodoListLimitItems(newItemLimit);
       });
-      eventBus.$on("sortingChanged", (sortOption) => {
+      EventBus.$on("sortingChanged", (sortOption) => {
         this.sortingChanged(sortOption);
       });
     },
     beforeDestroy() {
 
-      eventBus.$off("todoAdded", this.onTodoListAdd);
-      eventBus.$off("todoModified", this.onTodoListModify);
-      eventBus.$off("limitItemsTriggered", this.onTodoListLimitItems);
-      eventBus.$off("sortingChanged", this.sortingChanged);
+      EventBus.$off("todoAdded", this.onTodoListAdd);
+      EventBus.$off("todoModified", this.onTodoListModify);
+      EventBus.$off("limitItemsTriggered", this.onTodoListLimitItems);
+      EventBus.$off("sortingChanged", this.sortingChanged);
     },
     methods: {
       loadTodos(state, limit, offset) {
@@ -97,7 +97,7 @@
           offset = 0;
         }
 
-        todoService.getTodos(state, limit, offset).then(data => {
+        TodoService.getTodos(state, limit, offset).then(data => {
           if (data) {
             this.todos = data.slice(0);
             this.sortingChanged(this.sortOption);
@@ -107,17 +107,17 @@
       updateTodo(todo, event) {
 
         todo.done = event.target.checked;
-        todoService.updateTodo(todo);
+        TodoService.updateTodo(todo);
       },
       deleteTodo(todo, idx) {
 
-        todoService.deleteTodo(todo.id);
+        TodoService.deleteTodo(todo.id);
         this.todos.splice(idx, 1);
       },
       openModifyModal(todo) {
 
-        todoService.getTodo(todo.id).then((modifyTodo) => {
-          eventBus.$emit("modifyModalOpened", modifyTodo)
+        TodoService.getTodo(todo.id).then((modifyTodo) => {
+          EventBus.$emit("modifyModalOpened", modifyTodo)
         });
       },
       onTodoListAdd(newTodo) {

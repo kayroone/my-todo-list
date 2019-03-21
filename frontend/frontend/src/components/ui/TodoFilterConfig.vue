@@ -27,7 +27,7 @@
 </template>
 
 <script>
-  import {eventBus} from '../../main';
+  import {EventBus} from '../../main';
 
   export default {
     name: "TodoFilterConfig",
@@ -46,17 +46,17 @@
     methods: {
       changeSortOption() {
 
-        eventBus.$emit("sortingChanged", this.sortOption);
+        EventBus.$emit("sortingChanged", this.sortOption);
       },
       sortByStateSelected() {
 
-        eventBus.$emit("sortByStateSelected");
+        EventBus.$emit("sortByStateSelected");
       },
       limitItems() {
 
         const newItemLimit = this.itemLimit;
 
-        eventBus.$emit("limitItemsTriggered", newItemLimit);
+        EventBus.$emit("limitItemsTriggered", newItemLimit);
       },
       restrictInput() {
 

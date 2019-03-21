@@ -24,31 +24,31 @@
 </template>
 
 <script>
-  import {eventBus} from '../../main';
-  import {frontendConfig} from '../../config/frontend-config';
+  import {EventBus} from '../../main';
+  import {FrontendConfig} from '../../config/frontend-config';
 
   export default {
     name: "TodoImprintModal",
     data() {
       return {
-        imprintName: frontendConfig.imprintName,
-        imprintStreet: frontendConfig.imprintStreet,
-        imprintTown: frontendConfig.imprintTown,
-        imprintPostcode: frontendConfig.imprintPostcode,
-        imprintPhone: frontendConfig.imprintPhone,
-        imprintEmail: frontendConfig.imprintEmail
+        imprintName: FrontendConfig.imprintName,
+        imprintStreet: FrontendConfig.imprintStreet,
+        imprintTown: FrontendConfig.imprintTown,
+        imprintPostcode: FrontendConfig.imprintPostcode,
+        imprintPhone: FrontendConfig.imprintPhone,
+        imprintEmail: FrontendConfig.imprintEmail
       }
     },
     created() {
 
-      eventBus.$on("imprintModalOpened", () => {
+      EventBus.$on("imprintModalOpened", () => {
 
         this.showModal();
       });
     },
     beforeDestroy() {
 
-      eventBus.$off("imprintModalOpened", this.showModal);
+      EventBus.$off("imprintModalOpened", this.showModal);
     },
     methods: {
       showModal() {
