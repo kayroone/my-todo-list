@@ -2,21 +2,25 @@
   <div class="container-fluid">
     <div class="wrapper-main">
 
+      <!-- To do modify modal -->
       <todo-modify-modal></todo-modify-modal>
 
+      <!-- To do filter config -->
       <div v-if="todos.length > 0">
         <transition-group name="fade">
           <todo-filter-config :key="todoFilterConfigKey"></todo-filter-config>
         </transition-group>
       </div>
 
+      <!-- Handling if no items available -->
       <div v-else>
         <h3 class="todo-no-items-transparency">Do you have nothing to do?</h3>
       </div>
 
+      <!-- Item list -->
       <transition-group name="fade">
         <b-list-group v-for="(todo, idx) in todos" :key="todo.id">
-          <b-list-group-item>
+          <b-list-group-item class="list-group-item">
 
             {{ todo.title }} | {{ todo.dueDate }}
             <label class="checkbox">
@@ -61,29 +65,54 @@
     },
     created() {
 
+      /* Load all to do items in vue created state */
       this.loadTodos();
 
+      /* Bind todoAdded event */
       EventBus.$on("todoAdded", newTodo => {
         this.onTodoListAdd(newTodo);
       });
+
+      /* Bind todoModified event */
       EventBus.$on("todoModified", () => {
         this.onTodoListModify();
       });
+
+      /* Bind limitItemsTriggered event */
       EventBus.$on("limitItemsTriggered", (newItemLimit) => {
         this.onTodoListLimitItems(newItemLimit);
       });
+
+      /* Bind sortingChanged event */
       EventBus.$on("sortingChanged", (sortOption) => {
         this.sortingChanged(sortOption);
       });
     },
     beforeDestroy() {
 
+      /* Unbind todoAdded event */
       EventBus.$off("todoAdded", this.onTodoListAdd);
+
+      /* Unbind todoModified event */
       EventBus.$off("todoModified", this.onTodoListModify);
+
+      /* Unbind limitItemsTriggered event */
       EventBus.$off("limitItemsTriggered", this.onTodoListLimitItems);
+
+      /* Unbind sortingChanged event */
       EventBus.$off("sortingChanged", this.sortingChanged);
     },
     methods: {
+
+      /**
+       * Load all to do items from server, replace scope to do array and sort array
+       * based on chosen sort option.
+       *
+       * @param state The state (all/unfinished) of the items being fetched.
+       * @param limit The maximum of the items being displayed.
+       * @param offset From which item to be displayed.
+       */
+
       loadTodos(state, limit, offset) {
 
         /* Sanity check */
@@ -104,30 +133,70 @@
           }
         });
       },
+
+      /**
+       * Update an to do item on the server.
+       *
+       * @param todo The to do item to be updated.
+       * @param event The click event -> checkbox for finishing a to do item.
+       */
+
       updateTodo(todo, event) {
 
         todo.done = event.target.checked;
         TodoService.updateTodo(todo);
       },
+
+      /**
+       * Delete an to do item on the server and update the local scope to do array.
+       *
+       * @param todo The to do item to be deleted.
+       * @param idx The local scope arrays index of the item.
+       */
+
       deleteTodo(todo, idx) {
 
         TodoService.deleteTodo(todo.id);
         this.todos.splice(idx, 1);
       },
+
+      /**
+       * Open the modify modal and fire modifyModalOpened event.
+       *
+       * @param todo The to do item to be modified.
+       */
+
       openModifyModal(todo) {
 
         TodoService.getTodo(todo.id).then((modifyTodo) => {
           EventBus.$emit("modifyModalOpened", modifyTodo)
         });
       },
+
+      /**
+       * Add a new to oo item to the local scope array of todos.
+       *
+       * @param newTodo The new to do item.
+       */
+
       onTodoListAdd(newTodo) {
 
         this.todos.unshift(newTodo);
       },
+
+      /**
+       * Reload the to do list.
+       */
+
       onTodoListModify() {
 
         this.loadTodos();
       },
+
+      /**
+       * Sort the local scope array of todos by date.
+       */
+
       onTodoListSortByDate() {
 
         /* First sort todos array by ID */
@@ -135,7 +204,7 @@
           return todoOne.id - todoTwo.id
         });
 
-        /* Than sort by date */
+        /* Now sort by date */
         this.todos.sort(function (todoOne, todoTwo) {
 
           const todoOneDate = new Date(todoOne.dueDate);
@@ -144,6 +213,11 @@
           return todoOneDate - todoTwoDate;
         });
       },
+
+      /**
+       * Sort the local scope array of todos by state.
+       */
+
       onTodoListSortByState() {
 
         /* First sort todos array by ID */
@@ -151,11 +225,18 @@
           return todoOne.id - todoTwo.id
         });
 
-        /* Than sort by state */
+        /* Now sort by state */
         this.todos.sort(function (todoOne, todoTwo) {
           return todoOne.done - todoTwo.done
         });
       },
+
+      /**
+       * Change sorting option on todos list -> Triggered from TodoFilterConfig.
+       *
+       * @param sortOption The new sorting option (state/date).
+       */
+
       sortingChanged(sortOption) {
 
         if (sortOption === "state") {
@@ -166,6 +247,13 @@
           this.sortOption = "date";
         }
       },
+
+      /**
+       * Limit the to do items to be displayed.
+       *
+       * @param newItemLimit The new maximum items to be displayed.
+       */
+
       onTodoListLimitItems(newItemLimit) {
 
         this.loadTodos("all", newItemLimit, 0);

@@ -1,6 +1,7 @@
 <template>
   <div>
 
+    <!-- Filter config button -->
     <div class="todo-filter-config-toggle">
       <b-button v-b-toggle.config variant="outline-dark">
         <font-awesome-icon icon="cogs"/>
@@ -8,6 +9,7 @@
       </b-button>
     </div>
 
+    <!-- Filter config entries -->
     <div class="todo-filter-config-entries">
       <b-collapse id="config" class="mt-2">
         <div class="form-inline">
@@ -16,6 +18,7 @@
           <number-input v-model="itemLimit" v-on:change="limitItems" :min="1" :max="100"
                         inline controls rounded class="todo-filter-config-entry"></number-input>
 
+          <!-- Sort by date or state -->
           <b-form-radio-group v-model="sortOption" :options="options" v-on:change="changeSortOption">
           </b-form-radio-group>
 
@@ -44,22 +47,25 @@
       }
     },
     methods: {
+
+      /**
+       * Trigger sortingChanged event.
+       */
+
       changeSortOption() {
 
         EventBus.$emit("sortingChanged", this.sortOption);
       },
-      sortByStateSelected() {
 
-        EventBus.$emit("sortByStateSelected");
-      },
+      /**
+       * Get new item limit and trigger limitItemsTriggered event.
+       */
+
       limitItems() {
 
         const newItemLimit = this.itemLimit;
 
         EventBus.$emit("limitItemsTriggered", newItemLimit);
-      },
-      restrictInput() {
-
       }
     }
   }

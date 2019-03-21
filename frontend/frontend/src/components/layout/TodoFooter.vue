@@ -1,8 +1,12 @@
 <template>
   <div>
+
+    <!-- Imprint link -->
     <div class="space-top text-center">
       <b-button class="text-dark" variant="link" @click="openImprintModal">Imprint</b-button>
     </div>
+
+    <!-- Imprint modal -->
     <todo-imprint-modal></todo-imprint-modal>
   </div>
 </template>
@@ -15,6 +19,11 @@
     name: "TodoFooter",
     components: {TodoImprintModal},
     methods: {
+
+      /**
+       * Trigger imprintModalOpened event.
+       */
+
       openImprintModal() {
 
         EventBus.$emit("imprintModalOpened");

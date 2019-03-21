@@ -41,16 +41,18 @@
     },
     created() {
 
+      /* Bind modal show event */
       EventBus.$on("imprintModalOpened", () => {
-
         this.showModal();
       });
     },
     beforeDestroy() {
 
+      /* Unbind modal show event */
       EventBus.$off("imprintModalOpened", this.showModal);
     },
     methods: {
+
       showModal() {
 
         this.$refs.todoImprintModalRef.show()

@@ -1,3 +1,9 @@
+/**
+ * Main frontend config object holding imprint data and the API URL.
+ *
+ * @type {{imprintEmail: string, apiUrl: string, imprintName: string, imprintPostcode: string,
+ * imprintTown: string, imprintPhone: string, imprintStreet: string}}
+ */
 
 export const FrontendConfig = {
   apiUrl: "http://localhost:9080/todos/",

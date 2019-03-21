@@ -21,7 +21,7 @@
 
       </b-form-group>
 
-      <!-- Submit and add -->
+      <!-- Submit and add new to do item -->
       <b-button id="todo-add" type="submit" variant="secondary">Add</b-button>
 
     </b-form>
@@ -48,6 +48,11 @@
       }
     },
     methods: {
+
+      /**
+       * Create a new to do item, save changes to server and fire todoAdded event.
+       */
+
       createTodo() {
 
         const newTodo = {
@@ -57,7 +62,6 @@
           done: false
         };
 
-        /* Create and get new to do item from API */
         TodoService.createTodo(newTodo)
           .then(function (data) {
             if (data) {
@@ -70,6 +74,13 @@
         this.todo.description = "";
         this.todo.dueDate = new Date();
       },
+
+      /**
+       * Custom date formatter for datepicker.
+       *
+       * @param date
+       * @returns {*}
+       */
 
       customFormatter(date) {
 

@@ -3,9 +3,10 @@ import {DateUtil} from '../util/date-formatter';
 import $ from 'jquery'
 
 /**
- * Export all To Do service CRUD methods via TodoService object.
+ * Export all to do service CRUD methods via TodoService object.
  *
- * @type {{getTodos: (function(*=, *=, *=): *), updateTodo: (function(*=): *), getTodo: (function(*): *), deleteTodo: (function(*): *), createTodo: (function(*=): *)}}
+ * @type {{getTodos: (function(*=, *=, *=): *), updateTodo: (function(*=): *), getTodo: (function(*): *),
+ * deleteTodo: (function(*): *), createTodo: (function(*=): *)}}
  */
 
 export const TodoService = {
@@ -125,7 +126,7 @@ function updateTodo(todoFull) {
 }
 
 /**
- * Handle an API HTTP response.
+ * Handle an API HTTP JSON response.
  *
  * @param response
  * @returns {*}
@@ -133,21 +134,20 @@ function updateTodo(todoFull) {
 
 function handleJsonResponse(response) {
 
-  // Handle errors:
+  /* Handle errors */
   if (!response.ok) {
     const error = response.statusText;
     return Promise.reject(error);
   }
 
-  // This could happen:
+  /* This could happen */
   if (response.status === 204 || response.text === "") {
     return Promise.resolve();
   }
 
-  // Finally process JSON response:
+  /* Finally process JSON response */
   return response.text().then(text => {
 
-    // This could return an array or a single object:
     const data = text && JSON.parse(text);
 
     // Convert to frontend date:

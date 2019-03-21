@@ -1,5 +1,12 @@
 import moment from "moment";
 
+/**
+ * Object holding all date formatter functions.
+ *
+ * @type {{formatDateInObjectBackend: (function(*=): ({dueDate}|*)), formatDateShort: (function(*=): string),
+ * toDefaultDate: (function(*=): Date), formatDateInObjectFrontend: formatDateInObjectFrontend}}
+ */
+
 export const DateUtil = {
   formatDateShort,
   toDefaultDate,
@@ -7,15 +14,36 @@ export const DateUtil = {
   formatDateInObjectBackend
 };
 
+/**
+ * Short(er) date format to be displayed in the frontend.
+ *
+ * @param date
+ * @returns {string}
+ */
+
 function formatDateShort(date) {
 
   return moment(date).format('MMM Do YYYY, h:mm A');
 }
 
+/**
+ * Default date -> Can be handled by the datepicker.
+ *
+ * @param date
+ * @returns {Date}
+ */
+
 function toDefaultDate(date) {
 
   return moment(date, 'MMM Do YYYY, h:mm A').toDate();
 }
+
+/**
+ * Format the date in a single to do item or an array of to do items.
+ *
+ * @param todo
+ * @returns {*}
+ */
 
 function formatDateInObjectFrontend(todo) {
 
@@ -38,6 +66,14 @@ function formatDateInObjectFrontend(todo) {
   return todo;
 }
 
+/**
+ * Format the frontend date back to an ISO string -> Can be handled by the backend. Also deep copies
+ * the object so that the local scope is not changed.
+ *
+ * @param todo
+ * @returns {{dueDate}|*}
+ */
+
 function formatDateInObjectBackend(todo) {
 
   const formattedObject = deepCopy(todo);
@@ -50,6 +86,12 @@ function formatDateInObjectBackend(todo) {
 
   return formattedObject;
 }
+
+/**
+ * Deep copy an object and return a new object holding the contents of the input object.
+ *
+ * @param objectSource
+ */
 
 function deepCopy(objectSource) {
 

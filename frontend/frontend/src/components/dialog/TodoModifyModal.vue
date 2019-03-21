@@ -22,9 +22,12 @@
         </b-form-group>
       </div>
 
+      <!-- Save modified to do item -->
       <b-button class="mt-2" variant="outline-dark"
                 block @click="saveModifyModal(modified)">Save
       </b-button>
+
+      <!-- Discard changes and close modal -->
       <b-button class="mt-3" variant="outline-dark"
                 block @click="clearModifyModal">Close
       </b-button>
@@ -53,24 +56,34 @@
         }
       }
     },
-    mounted() {
+    created() {
 
+      /* Bind modal show event */
       EventBus.$on("modifyModalOpened", todo => {
         this.showModal(todo);
       });
-    },
-    created() {
 
+      /* Bind modal close event */
       EventBus.$on("modifyModalClosed", () => {
         this.clearModifyModal();
       });
     },
     beforeDestroy() {
 
+      /* Unbind modal show event */
       EventBus.$off("modifyModalOpened", this.showModal);
+
+      /* Unbind modal close event */
       EventBus.$off("modifyModalClosed", this.clearModifyModal);
     },
     methods: {
+
+      /**
+       * Copy to do item to local scope and open the modal.
+       *
+       * @param todo The to do item that will be displayed in this modal.
+       */
+
       showModal(todo) {
 
         this.modified.title = todo.title;
@@ -81,11 +94,23 @@
 
         this.$refs.todoModifyModalRef.show()
       },
+
+      /**
+       * Clear local scope.
+       */
+
       clearModifyModal() {
 
         this.modified = {};
         this.$refs.todoModifyModalRef.hide()
       },
+
+      /**
+       * Save changes to server and fire todoModified event.
+       *
+       * @param modified The object holding the changes.
+       */
+
       saveModifyModal(modified) {
 
         TodoService.updateTodo(modified).then(() => {
@@ -93,6 +118,14 @@
           this.$refs.todoModifyModalRef.toggle('#toggleBtn')
         });
       },
+
+      /**
+       * Custom date formatter for datepicker.
+       *
+       * @param date
+       * @returns {*}
+       */
+
       customFormatter(date) {
 
         return DateUtil.formatDateShort(date);
