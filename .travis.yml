@@ -1,15 +1,15 @@
 language: java
+
 jdk: openjdk11
 
 env:
-  - NODE_VERSION="11.12.0"
+	- NODE_VERSION="11.12.0"
 
 before_install:
-  - wget https://raw.githubusercontent.com/creationix/nvm/v0.33.11/nvm.sh -O ~/.nvm/nvm.sh
-  - source ~/.nvm/nvm.sh
-  - nvm install 11
-  - node --version
+	- wget https://raw.githubusercontent.com/creationix/nvm/v0.33.11/nvm.sh -O ~/.nvm/nvm.sh
+	- source ~/.nvm/nvm.sh
+	- nvm install 11
+	- node --version
 	- nvm install $NODE_VERSION
 
-install: true
 script: mvn clean install
