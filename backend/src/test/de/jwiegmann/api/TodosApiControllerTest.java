@@ -98,6 +98,7 @@ public class TodosApiControllerTest {
 
         Iterator keys = jsonObject.keys();
 
+        // 2. Action/Assert
         while (keys.hasNext()) {
 
             String key = (String) keys.next();
@@ -125,10 +126,10 @@ public class TodosApiControllerTest {
     }
 
     @Test
-    public void createTodoWithIncompleteData() throws Exception {
+    public void createTodoWithLongTitle() throws Exception {
 
         // 1. Arrange:
-        this.todoBase.setTitle("");
+        this.todoBase.setTitle("TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
         String requestJsonBody = this.objectMapper.writeValueAsString(this.todoBase);
 
         // 2. Action/Assert:
@@ -153,6 +154,14 @@ public class TodosApiControllerTest {
         // 1. Action/Assert:
         this.mvc.perform(delete("/todos/" + 4))
             .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void deleteAllTodos() throws Exception {
+
+        // 1. Action/Assert:
+        this.mvc.perform(delete("/todos/"))
+            .andExpect(status().isNoContent());
     }
 
     @Test
@@ -188,9 +197,71 @@ public class TodosApiControllerTest {
         for (int i = 0; i < 5; i++) {
             createToDo();
         }
+        for (int i = 0; i < 3; i++) {
+            this.todoBase.setDone(true);
+            createToDo();
+        }
 
         // 2. Action/Assert:
-        this.mvc.perform(get("/todos")).andExpect(status().isOk())
+        this.mvc.perform(get("/todos?state=all&limit=8")).andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(8)));
+
+        // 3. Cleanup:
+        removeAllToDos();
+    }
+
+    @Test
+    public void getAllExistingTodosPartial() throws Exception {
+
+        // 1. Arrange:
+        for (int i = 0; i < 8; i++) {
+            createToDo();
+        }
+
+        // 2. Action/Assert:
+        this.mvc.perform(get("/todos?state=all"))
+            .andExpect(status().isPartialContent())
+            .andExpect(jsonPath("$", hasSize(5)));
+
+        // 3. Cleanup:
+        removeAllToDos();
+    }
+
+    @Test
+    public void getAllExistingUnfinishedTodos() throws Exception {
+
+        // 1. Arrange:
+        for (int i = 0; i < 5; i++) {
+            createToDo();
+        }
+        for (int i = 0; i < 3; i++) {
+            this.todoBase.setDone(true);
+            createToDo();
+        }
+
+        // 2. Action/Assert:
+        this.mvc.perform(get("/todos?state=unfinished"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(5)));
+
+        // 3. Cleanup:
+        removeAllToDos();
+    }
+
+    @Test
+    public void getAllExistingUnfinishedTodosPartial() throws Exception {
+
+        // 1. Arrange:
+        for (int i = 0; i < 8; i++) {
+            createToDo();
+        }
+        for (int i = 0; i < 3; i++) {
+            this.todoBase.setDone(true);
+            createToDo();
+        }
+
+        // 2. Action/Assert:
+        this.mvc.perform(get("/todos?state=unfinished")).andExpect(status().isPartialContent())
             .andExpect(jsonPath("$", hasSize(5)));
 
         // 3. Cleanup:
@@ -200,25 +271,12 @@ public class TodosApiControllerTest {
     @Test
     public void getNoneExistingTodos() throws Exception {
 
-        // 1. Action/Assert:
-        this.mvc.perform(get("/todos"))
-            .andExpect(status().isNoContent());
-    }
-
-    @Test
-    public void getPartialExistingTodos() throws Exception {
-
         // 1. Arrange:
-        for (int i = 0; i < 10; i++) {
-            createToDo();
-        }
+        removeAllToDos();
 
         // 2. Action/Assert:
         this.mvc.perform(get("/todos"))
-            .andExpect(status().isPartialContent());
-
-        // 3. Cleanup:
-        removeAllToDos();
+            .andExpect(status().isNoContent());
     }
 
     @Test
@@ -244,6 +302,70 @@ public class TodosApiControllerTest {
     }
 
     @Test
+    public void updateTodoWithMissingData() throws Exception {
+
+        // 1. Arrange:
+        TodoFull todoFull = createToDo();
+        int todoId = todoFull.getId();
+
+        String requestJsonBody = this.objectMapper.writeValueAsString(todoFull);
+
+        JSONObject jsonObject = new JSONObject(requestJsonBody);
+        JSONObject requestObject = new JSONObject(requestJsonBody);
+
+        Iterator keys = jsonObject.keys();
+
+        // 2. Action/Assert
+        while (keys.hasNext()) {
+
+            String key = (String) keys.next();
+            String value = requestObject.getString(key);
+
+            requestObject.remove(key);
+
+            if (key.equalsIgnoreCase("description") ||
+                key.equalsIgnoreCase("id")) {
+                this.mvc.perform(put("/todos/" + todoId)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestObject.toString()))
+                    .andExpect(status().isNoContent());
+            } else {
+                this.mvc.perform(put("/todos/" + todoId)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestObject.toString()))
+                    .andExpect(status().isBadRequest());
+            }
+
+            requestObject.put(key, value);
+        }
+
+        // 3. Cleanup:
+        removeAllToDos();
+    }
+
+    @Test
+    public void updateExistingTodoWithNoIdInRequest() throws Exception {
+
+        // 1. Arrange:
+        createToDo();
+
+        this.todoBase.setDescription("barfoo");
+        this.todoBase.setTitle("foobar");
+        this.todoBase.setDone(true);
+        this.todoBase.setDueDate(getDateTime("2019-03-16T20:14:57.445Z"));
+
+        String requestJsonBody = this.objectMapper.writeValueAsString(this.todoBase);
+
+        // 2. Action/Assert:
+        this.mvc.perform(put("/todos")
+            .contentType(MediaType.APPLICATION_JSON).content(requestJsonBody))
+            .andExpect(status().isMethodNotAllowed());
+
+        // 3. Cleanup:
+        removeAllToDos();
+    }
+
+    @Test
     public void updateNoneExistingTodo() throws Exception {
 
         // 1. Arrange:
@@ -257,6 +379,22 @@ public class TodosApiControllerTest {
         // 2. Action/Assert:
         this.mvc.perform(put("/todos/" + 4).contentType(MediaType.APPLICATION_JSON).content(requestJsonBody))
             .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void updateTodoWithLongTitle() throws Exception {
+
+        // 1. Arrange:
+        TodoFull todoFull = createToDo();
+
+        this.todoBase.setTitle("TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+        String requestJsonBody = this.objectMapper.writeValueAsString(this.todoBase);
+
+        // 2. Action/Assert:
+        this.mvc.perform(put("/todos/" + todoFull.getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(requestJsonBody))
+            .andExpect(status().isBadRequest());
     }
 
     // TEST HELPERS --------------------------------------------------------------------------------------------------------
