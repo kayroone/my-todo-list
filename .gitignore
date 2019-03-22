@@ -43,5 +43,5 @@ Thumbs.db
 
 # Project related #
 #############
-resources/public
 target
+backend/src/main/resources/public
