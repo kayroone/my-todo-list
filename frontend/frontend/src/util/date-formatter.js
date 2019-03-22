@@ -23,7 +23,7 @@ export const DateUtil = {
 
 function formatDateShort(date) {
 
-  return moment(date).format('MMM Do YYYY, h:mm A');
+  return moment(date).format('MMM Do YYYY');
 }
 
 /**
@@ -35,7 +35,7 @@ function formatDateShort(date) {
 
 function toDefaultDate(date) {
 
-  return moment(date, 'MMM Do YYYY, h:mm A').toDate();
+  return moment(date, 'MMM Do YYYY').toDate();
 }
 
 /**

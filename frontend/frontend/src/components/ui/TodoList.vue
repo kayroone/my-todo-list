@@ -168,8 +168,15 @@
 
       deleteTodo(todo, idx) {
 
-        TodoService.deleteTodo(todo.id);
-        this.todos.splice(idx, 1);
+        TodoService.deleteTodo(todo.id).then(() => {
+
+          this.todos.splice(idx, 1);
+
+          /* Check if we have to reload items */
+          if (this.todos.length === 0) {
+            this.loadTodos(this.itemLimit)
+          }
+        });
       },
 
       /**

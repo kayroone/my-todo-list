@@ -36,7 +36,7 @@ function createTodo(todoBase) {
   };
 
   return fetch(`${FrontendConfig.apiUrl}`, requestProperties)
-    .then(handleJsonResponse);
+    .then(handleResponse);
 }
 
 /**
@@ -56,9 +56,7 @@ function deleteTodo(todoId) {
   const fetchUrl = `${FrontendConfig.apiUrl}` + todoId;
 
   return fetch(fetchUrl, requestProperties)
-    .then(response => {
-      return response.status;
-    });
+    .then(handleResponse);
 }
 
 /**
@@ -78,7 +76,7 @@ function getTodo(todoId) {
   const fetchUrl = `${FrontendConfig.apiUrl}` + todoId;
 
   return fetch(fetchUrl, requestOptions)
-    .then(handleJsonResponse);
+    .then(handleResponse);
 }
 
 /**
@@ -98,7 +96,7 @@ function getTodos(state, limit, offset) {
     $.param({state: state, limit: limit, offset: offset});
 
   return fetch(fetchUrl, requestOptions)
-    .then(handleJsonResponse);
+    .then(handleResponse);
 }
 
 /**
@@ -122,27 +120,39 @@ function updateTodo(todoFull) {
   const fetchUrl = `${FrontendConfig.apiUrl}` + requestObject.id;
 
   return fetch(fetchUrl, requestOptions)
-    .then(handleJsonResponse);
+    .then(handleResponse);
 }
 
 /**
- * Handle an API HTTP JSON response.
+ * Handle an API HTTP response.
  *
  * @param response
  * @returns {*}
  */
 
-function handleJsonResponse(response) {
-
-  /* Handle errors */
-  if (!response.ok) {
-    const error = response.statusText || "";
-    return Promise.reject(error);
-  }
+function handleResponse(response) {
 
   /* This could happen */
   if (response.status === 204 || response.text === "") {
     return Promise.resolve();
+  }
+
+  /* Handle errors */
+  if (!response.ok) {
+    let error = response.statusText;
+    if (!error) {
+      switch (response.status) {
+        case 400:
+          error = "Invalid data sent to server";
+          break;
+        case 404:
+          error = "Entity not found at server";
+          break;
+        case 422:
+          error = "Entity could not be processed at server";
+      }
+    }
+    return Promise.reject(error);
   }
 
   /* Finally process JSON response */
