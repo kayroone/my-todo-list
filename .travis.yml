@@ -1,13 +1,24 @@
----
-install: true 
-before_install: 
-  - "wget https://raw.githubusercontent.com/creationix/nvm/v0.33.11/nvm.sh -O ~/.nvm/nvm.sh"
-  - "source ~/.nvm/nvm.sh"
-  - "nvm install 11"
-  - "node --version"
-  - "nvm install $NODE_VERSION"
-env: 
-  - NODE_VERSION="11.12.0"
-jdk: openjdk11
-language: java
-script: "mvn clean install"
+--- 
+matrix: 
+  include: 
+    - 
+      before_install: 
+        - "cd frontend/frontend"
+      install: 
+        - true
+      language: node_js
+      node_js: 
+        - "11.12.0"
+      script: 
+        - "mvn clean install"
+    - 
+      before_install: 
+        - "cd backend/"
+      install: 
+        - true
+      jdk: openjdk11
+      language: java
+      script: 
+        - "mvn clean install"
+notifications: 
+  email: false
