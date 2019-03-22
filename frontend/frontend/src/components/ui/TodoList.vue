@@ -172,9 +172,9 @@
 
           this.todos.splice(idx, 1);
 
-          /* Check if we have to reload items */
-          if (this.todos.length === 0) {
-            this.loadTodos(this.itemLimit)
+          /* Reload list with active filter config  */
+          if (this.todos.length !== this.itemLimit) {
+            this.loadTodos(null, this.itemLimit, null);
           }
         });
       },
@@ -258,6 +258,11 @@
 
       sortingChanged(sortOption) {
 
+        /* Sanity check */
+        if (!sortOption) {
+          this.sortOption = "date";
+        }
+
         if (sortOption === "state") {
           this.onTodoListSortByState();
           this.sortOption = "state";
@@ -275,6 +280,7 @@
 
       onTodoListLimitItems(newItemLimit) {
 
+        this.itemLimit = newItemLimit;
         this.loadTodos("all", newItemLimit, 0);
       }
     },
