@@ -3,7 +3,7 @@ matrix:
   include: 
     - 
       before_install: 
-        - "cd frontend/frontend"
+        - "cd frontend/"
       install: 
         - true
       language: node_js
